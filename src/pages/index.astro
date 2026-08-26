@@ -1,0 +1,288 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Dylan Bouillon"
+  description="Portfolio de Dylan Bouillon, développeur fullstack/DevOps — expérience, projets et compétences."
+>
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="#top">DB.</a>
+      <ul>
+        <li><a href="#profil">Profil</a></li>
+        <li><a href="#experience">Expérience</a></li>
+        <li><a href="#projets">Projets</a></li>
+        <li><a href="#competences">Compétences</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="wrap">
+      <p class="kicker mono">GUYANCOURT (78) · ÎLE-DE-FRANCE · OUVERT À UN CDI</p>
+      <h1>Dylan Bouillon</h1>
+      <p class="hero-role">Développeur Fullstack — DevOps</p>
+      <p class="hero-bio">
+        Diplômé d'un Master Développement Fullstack en 2026, après trois ans d'alternance chez
+        Orange en intégration et validation. Des applications web de bout en bout (Angular,
+        React, PHP) à l'outillage de la chaîne de livraison (GitLab CI/CD, Docker, Ansible) — et
+        un serveur personnel administré en autonomie sur mon temps libre.
+      </p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#projets">Voir les projets</a>
+        <a class="btn" href="#contact">Me contacter</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="profil">
+    <div class="wrap">
+      <div class="section-head"><h2>Profil</h2></div>
+      <p class="hero-bio" style="margin:0;">
+        Trois ans passés côté infrastructure critique — reprise de scripts legacy, outillage
+        CI/CD, DNS — m'ont appris à livrer dans un environnement où l'erreur coûte cher. En
+        parallèle, mes projets personnels me servent de terrain pour explorer ce que je ne
+        pratique pas encore au quotidien : nouvelles stacks, architecture produit, jeux.
+      </p>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Expérience</h2>
+        <span class="count mono">4 postes · 2022 – 2026</span>
+      </div>
+      <div class="timeline">
+        <div class="job">
+          <div class="job-date mono">SEPT. 2024<br />– AOÛT 2026</div>
+          <div>
+            <p class="job-title">Développeur Fullstack / DevOps — Alternance</p>
+            <p class="job-org">Orange, équipe PIVA (intégration et validation, périmètre DNS) · Guyancourt</p>
+            <ul>
+              <li>
+                Reprise et correction d'un script legacy en C au cœur de l'infrastructure DNS
+                (BIND) d'Orange, remis en service pour l'équipe.
+              </li>
+              <li>
+                Conception d'un linter Ansible déclenché sur chaque pipeline GitLab CI, déployé
+                sur l'ensemble du projet.
+              </li>
+              <li>
+                Développement d'un générateur de flipbook en JavaScript en remplacement des
+                newsletters PDF, adopté par plusieurs services RH.
+              </li>
+              <li>Maintenance et modernisation des pipelines CI/CD de l'équipe.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-date mono">SEPT. 2023<br />– AOÛT 2024</div>
+          <div>
+            <p class="job-title">Développeur Web — Alternance</p>
+            <p class="job-org">Orange France</p>
+            <ul>
+              <li>
+                Développement d'une IHM web d'administration en Angular pour consulter la base de
+                données clients Orange, alimentée par les API SOAP internes.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-date mono">DÉC. 2022<br />– FÉVR. 2023</div>
+          <div>
+            <p class="job-title">Développeur Web / Base de données — Stage</p>
+            <p class="job-org">DBXP</p>
+            <ul>
+              <li>
+                Site web en HTML/CSS et PHP conteneurisé avec Docker : authentification sur base
+                MariaDB, intégration de l'API Google Calendar.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-date mono">JUIN – JUIL. 2022</div>
+          <div>
+            <p class="job-title">Développeur WordPress — Stage</p>
+            <p class="job-org">ReptilesMag</p>
+            <ul>
+              <li>
+                Développement d'un site e-commerce sous WordPress / Elementor, de l'intégration à
+                la mise en ligne.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projets">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Projets</h2>
+        <span class="count mono">10+ dépôts</span>
+      </div>
+      <div class="cards">
+        <div class="card">
+          <h3>RoissyShare</h3>
+          <p class="role-note mono">Équipe de 4 · Front-End + Architecture Infra</p>
+          <p class="desc">
+            Plateforme B2B d'échange de fournitures pour les entreprises de la zone de Roissy :
+            catalogue géolocalisé, recherche cartographique par rayon, mise en relation et suivi
+            d'impact CO2/RSE.
+          </p>
+          <div class="chips" style="margin-bottom:14px;">
+            <span class="chip">React</span><span class="chip">Node.js/Express</span><span class="chip">PostgreSQL/PostGIS</span><span class="chip">JWT</span><span class="chip">Docker</span><span class="chip">Proxmox VE</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
+          </div>
+          <a class="repo" href="https://github.com/H3Dylan/RoissyShare" target="_blank" rel="noopener">github.com/H3Dylan/RoissyShare →</a>
+          <a class="repo" href="/infra" style="border-top:none;padding-top:0;">Infra basée sur les mêmes briques que mon homelab →</a>
+        </div>
+        <div class="card">
+          <h3>Aetherfall</h3>
+          <p class="role-note mono">Solo · Python</p>
+          <p class="desc">
+            Jeu de rôle console au tour par tour : système de classes, bestiaire, inventaire,
+            ligne de quête.
+          </p>
+          <a class="repo" href="https://github.com/H3Dylan/Aetherfall" target="_blank" rel="noopener">github.com/H3Dylan/Aetherfall →</a>
+        </div>
+        <div class="card">
+          <h3>Pictur'Art</h3>
+          <p class="role-note mono">Équipe · MERN</p>
+          <p class="desc">
+            Réseau social de photos organisé par groupes privés : publication, réactions,
+            commentaires, PWA installable.
+          </p>
+          <a class="repo" href="https://github.com/BrasSelva/Pictur-Art" target="_blank" rel="noopener">github.com/BrasSelva/Pictur-Art →</a>
+        </div>
+      </div>
+
+      <div class="other-repos">
+        <span class="label">AUTRES DÉPÔTS PUBLICS</span>
+        <div class="repo-strip">
+          <a class="repo-chip" href="https://github.com/H3Dylan/projet-terraform-ansible" target="_blank" rel="noopener"><span class="dot"></span>projet-terraform-ansible</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan/social-network" target="_blank" rel="noopener"><span class="dot"></span>social-network</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan/pokedex-weather" target="_blank" rel="noopener"><span class="dot"></span>pokedex-weather</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan/Airneis" target="_blank" rel="noopener"><span class="dot"></span>Airneis</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan/nosql" target="_blank" rel="noopener"><span class="dot"></span>nosql</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan/phpihm" target="_blank" rel="noopener"><span class="dot"></span>phpihm</a>
+          <a class="repo-chip" href="https://github.com/H3Dylan" target="_blank" rel="noopener"><span class="dot"></span>voir tout →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="competences">
+    <div class="wrap">
+      <div class="section-head"><h2>Compétences</h2></div>
+      <div class="skill-groups">
+        <div class="skill-group">
+          <span class="g-label">Front-end</span>
+          <div class="chips">
+            <span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">Angular</span><span class="chip">React</span><span class="chip">HTML5</span><span class="chip">CSS3</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <span class="g-label">Back-end</span>
+          <div class="chips">
+            <span class="chip">PHP</span><span class="chip">Python</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">Java</span><span class="chip">API REST</span><span class="chip">API SOAP</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <span class="g-label">Bases de données</span>
+          <div class="chips">
+            <span class="chip">SQL</span><span class="chip">MySQL</span><span class="chip">MariaDB</span><span class="chip">MongoDB</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <span class="g-label">DevOps &amp; outils</span>
+          <div class="chips">
+            <span class="chip">Git</span><span class="chip">GitLab CI/CD</span><span class="chip">Docker</span><span class="chip">Ansible</span><span class="chip">Linux/UNIX</span><span class="chip">BIND (DNS)</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <span class="g-label">CMS</span>
+          <div class="chips">
+            <span class="chip">WordPress</span><span class="chip">Elementor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="homelab">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>À côté du cursus</h2>
+        <span class="count mono">homelab perso</span>
+      </div>
+      <p class="hero-bio" style="margin:0 0 24px;">
+        Les compétences DevOps ci-dessus — et celles déployées sur RoissyShare (Proxmox,
+        WireGuard, Traefik) — je les pratique aussi sur mon temps libre : un serveur Proxmox
+        personnel tourne en continu à la maison, VPN, reverse proxy et monitoring compris.
+      </p>
+      <div class="card" style="max-width:420px;">
+        <h3>Infrastructure personnelle</h3>
+        <p class="role-note mono">Proxmox VE · homelab</p>
+        <p class="desc">
+          VPN WireGuard, reverse proxy, stack de monitoring, services conteneurisés (LXC/Docker)
+          — administrés en autonomie.
+        </p>
+        <a class="repo" href="/infra">Voir la carte réseau interactive →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="formation">
+    <div class="wrap">
+      <div class="section-head"><h2>Formation</h2></div>
+      <div class="edu-list">
+        <div class="edu-item">
+          <div><p class="name">Master Développement Fullstack (M1–M2)</p><p class="org">H3 Hitema, Paris Montparnasse</p></div>
+          <p class="date">2024 – 2026</p>
+        </div>
+        <div class="edu-item">
+          <div><p class="name">Bachelor Responsable de Projets Informatiques</p><p class="org">H3 Hitema, Issy-les-Moulineaux</p></div>
+          <p class="date">2021 – 2024</p>
+        </div>
+        <div class="edu-item">
+          <div><p class="name">Prépa intégrée, 1<sup>re</sup> année d'école d'ingénieur</p><p class="org">Polytech Paris-Saclay</p></div>
+          <p class="date">2020 – 2021</p>
+        </div>
+        <div class="edu-item">
+          <div><p class="name">Baccalauréat scientifique, spé. Sciences de l'ingénieur — mention Très bien</p><p class="org">Lycée Viollet-le-Duc</p></div>
+          <p class="date">2020</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="contact" id="contact">
+    <div class="wrap">
+      <h2>Contact</h2>
+      <div class="contact-row">
+        <div class="contact-item">
+          <span class="tb-label">EMAIL</span>
+          <a href="mailto:dylanb@orange.fr">dylanb@orange.fr</a>
+        </div>
+        <div class="contact-item">
+          <span class="tb-label">LINKEDIN</span>
+          <a href="https://linkedin.com/in/dylan-bouillon-9119b9233" target="_blank" rel="noopener">dylan-bouillon</a>
+        </div>
+        <div class="contact-item">
+          <span class="tb-label">GITHUB</span>
+          <a href="https://github.com/H3Dylan" target="_blank" rel="noopener">H3Dylan</a>
+        </div>
+      </div>
+      <p class="fine">Guyancourt (78) · Permis B · Anglais B2 · Espagnol notions</p>
+    </div>
+  </footer>
+</BaseLayout>

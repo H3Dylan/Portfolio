@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NetworkDiagram from "../components/NetworkDiagram";
+---
+
+<BaseLayout
+  title="serveur"
+  description="Carte réseau interactive du homelab Proxmox de Dylan Bouillon — nœuds cliquables avec rôle et métriques."
+>
+  <header class="top">
+    <div class="wrap">
+      <a class="back mono" href="/">← Retour au portfolio</a>
+      <h1>Infrastructure personnelle</h1>
+      <p>
+        Un homelab Proxmox administré en autonomie, en dehors du cursus et du travail. Clique
+        sur un nœud pour voir son rôle et son état.
+      </p>
+      <span class="snapshot-tag"><span class="dot"></span>RELEVÉ STATIQUE — 25/08/2026</span>
+    </div>
+  </header>
+
+  <section class="diagram-section">
+    <div class="wrap">
+      <NetworkDiagram client:load />
+
+      <div class="live-note">
+        <strong>Sur les stats en direct —</strong> ces chiffres sont un relevé figé au 25/08/2026,
+        pas un flux temps réel. Brancher du vrai live demanderait d'exposer un petit point d'accès
+        en lecture seule depuis le LXC monitoring (Prometheus/Grafana), passé derrière le
+        reverse-proxy avec authentification et sans exposer les dashboards internes bruts sur
+        internet. Faisable, mais c'est une vraie tâche d'infra à part.
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <div class="wrap">
+      <p>github.com/H3Dylan · Proxmox VE 9.2.2</p>
+    </div>
+  </footer>
+</BaseLayout>
