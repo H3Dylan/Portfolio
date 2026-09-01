@@ -107,6 +107,63 @@ systemd-run --on-calendar='daily' --unit=portfolio-deploy /opt/portfolio/deploy/
 | Fichier                      | Destination                                |
 | ---------------------------- | ------------------------------------------ |
 | `setup-lxc.sh`               | execute une fois dans le LXC               |
+| `setup-runner.sh`            | execute une fois dans le LXC (runner CI)   |
 | `deploy.sh`                  | `/opt/portfolio/deploy/deploy.sh`          |
 | `nginx.conf`                 | `/etc/nginx/sites-available/portfolio`     |
 | `traefik/portfolio.yml`      | `/opt/traefik/config/portfolio.yml` (LXC 102) |
+
+## CI/CD
+
+Un runner GitHub Actions self-hosted tourne dans le LXC 105. Il **sort** en
+HTTPS vers GitHub : aucun port entrant, aucune cle SSH, aucun secret stocke
+cote GitHub.
+
+Pipeline (`.github/workflows/deploy.yml`), a chaque push sur `main` :
+
+1. **build** (runner GitHub) : `npm ci` + `npm run build`. Si le site ne compile
+   pas, le job suivant ne demarre pas.
+2. **deploy** (runner du LXC) : `sudo /opt/portfolio/deploy/deploy.sh`.
+
+Le job de deploiement ne fait pas de `checkout` : `deploy.sh` effectue son
+propre `fetch` + `reset --hard origin/main`. Le deploiement manuel et le
+deploiement automatique empruntent donc exactement le meme chemin de code.
+
+### Installation du runner
+
+Recuperer un token sur GitHub : **Settings > Actions > Runners > New
+self-hosted runner > Linux x64**. Le token affiche est ephemere (~1h) et ne
+sert qu'a l'enregistrement.
+
+```sh
+pct exec 105 -- /opt/portfolio/deploy/setup-runner.sh <TOKEN>
+```
+
+Le script cree un utilisateur `runner` non privilegie, installe le runner en
+service systemd, et lui accorde un droit `sudo` **limite au seul
+`deploy.sh`** (`/etc/sudoers.d/runner-deploy`) : il ne peut rien executer
+d'autre en root.
+
+### Securite sur un depot public
+
+GitHub deconseille les runners self-hosted sur les depots publics : un
+inconnu pourrait ouvrir une pull request dont le code s'executerait sur la
+machine. La protection ici est que le workflow ne se declenche **que sur
+`push` vers `main`** — jamais sur `pull_request`. Une PR, meme depuis un fork,
+n'atteint pas le runner.
+
+**Ne pas ajouter `pull_request` aux declencheurs** sans passer le depot en
+prive ou exiger une approbation manuelle
+(Settings > Actions > *Require approval for all outside collaborators*).
+
+### Commandes utiles
+
+```sh
+pct exec 105 -- bash -c "cd /opt/actions-runner && ./svc.sh status"
+pct exec 105 -- journalctl -u "actions.runner.*" -n 50
+```
+
+Le deploiement manuel reste disponible a tout moment :
+
+```sh
+pct exec 105 -- /opt/portfolio/deploy/deploy.sh
+```

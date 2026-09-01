@@ -1,0 +1,35 @@
+name: Deploy
+
+# Uniquement sur push vers main : une pull request (y compris depuis un fork)
+# ne declenche jamais le runner self-hosted. C'est la garde-fou principale sur
+# un depot public -- voir deploy/README.md, section CI/CD.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Deux deploiements ne doivent jamais se chevaucher : le second attend.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Verifier le build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+  deploy:
+    name: Deployer sur le LXC
+    needs: build
+    runs-on: [self-hosted, portfolio]
+    steps:
+      # Pas de checkout : deploy.sh fait son propre fetch/reset sur origin/main.
+      - run: sudo /opt/portfolio/deploy/deploy.sh
