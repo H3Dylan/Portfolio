@@ -334,7 +334,6 @@ footer.contact h2 {
 }
 .contact-item a, .contact-item .val { font-size: 0.98rem; text-decoration: none; }
 .contact-item a:hover { text-decoration: underline; }
-footer.contact .fine { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-soft); }
 
 /* =====================================================
    Infra page (network diagram)
