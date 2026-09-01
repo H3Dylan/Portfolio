@@ -29,8 +29,8 @@ http:
 
     portfolio-www-to-apex:
       redirectRegex:
-        regex: "^https?://www\.dylanbouillon\.fr/(.*)"
-        replacement: "https://dylanbouillon.fr/${1}"
+        regex: '^https?://www\.dylanbouillon\.fr/(.*)'
+        replacement: 'https://dylanbouillon.fr/${1}'
         permanent: true
 
   routers:

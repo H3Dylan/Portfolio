@@ -12,9 +12,9 @@ Internet -> Traefik (LXC 102, websecure + CrowdSec) -> http://<IP LXC>:80 -> ngi
 
 ```sh
 pveam update
-pveam download local debian-12-standard_12.7-1_amd64.tar.zst
+pveam download local debian-12-standard_12.12-1_amd64.tar.zst
 
-pct create 105 local:vztmpl/debian-12-standard_12.7-1_amd64.tar.zst \
+pct create 105 local:vztmpl/debian-12-standard_12.12-1_amd64.tar.zst \
   --hostname portfolio \
   --cores 1 --memory 1024 --swap 512 \
   --rootfs local-zfs:8 \
