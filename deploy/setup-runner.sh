@@ -18,7 +18,7 @@ log() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 
 log "Dependances"
 apt-get update
-apt-get install -y curl jq tar
+apt-get install -y curl jq tar sudo
 
 log "Utilisateur dedie (le runner refuse de tourner en root)"
 id -u "$RUNNER_USER" >/dev/null 2>&1 || useradd -m -s /bin/bash "$RUNNER_USER"
