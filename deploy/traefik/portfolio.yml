@@ -1,0 +1,63 @@
+# A deposer dans /opt/traefik/config/portfolio.yml sur le LXC 102 (reverse-proxy).
+# Traefik recharge le provider file automatiquement, pas de restart necessaire.
+#
+# Les middlewares sont volontairement prefixes "portfolio-" : ils font la meme
+# chose que ceux de roissyshare.yml mais sans dependre de ce fichier ni entrer
+# en conflit de nom avec lui (le provider file partage un seul namespace).
+
+http:
+  middlewares:
+    portfolio-crowdsec:
+      forwardAuth:
+        address: http://bouncer-traefik:8080/api/v1/forwardAuth
+        trustForwardHeader: true
+
+    portfolio-headers:
+      headers:
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
+        # Le site charge Google Fonts : un CSP plus strict devrait autoriser
+        # fonts.googleapis.com (style-src) et fonts.gstatic.com (font-src).
+        contentSecurityPolicy: "upgrade-insecure-requests"
+
+    portfolio-www-to-apex:
+      redirectRegex:
+        regex: "^https?://www\.dylanbouillon\.fr/(.*)"
+        replacement: "https://dylanbouillon.fr/${1}"
+        permanent: true
+
+  routers:
+    portfolio-router:
+      rule: "Host(`dylanbouillon.fr`)"
+      entryPoints:
+        - "websecure"
+      middlewares:
+        - "portfolio-crowdsec"
+        - "portfolio-headers"
+      service: "portfolio-service"
+      tls:
+        certResolver: "leresolver"
+
+    portfolio-www-router:
+      rule: "Host(`www.dylanbouillon.fr`)"
+      entryPoints:
+        - "websecure"
+      middlewares:
+        - "portfolio-www-to-apex"
+      service: "portfolio-service"
+      tls:
+        certResolver: "leresolver"
+
+  services:
+    portfolio-service:
+      loadBalancer:
+        servers:
+          # IP LAN statique du LXC 105 (portfolio)
+          - url: "http://192.168.1.105:80"
