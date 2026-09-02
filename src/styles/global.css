@@ -373,11 +373,11 @@ header.top p {
   position: absolute;
   transform: translate(-50%, -50%);
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   background: var(--surface);
   border: 1.5px solid var(--line);
   color: var(--ink);
-  padding: 9px 13px;
+  padding: 8px 10px;
   cursor: pointer;
   white-space: nowrap;
   display: flex;
@@ -388,6 +388,20 @@ header.top p {
 .node[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
 .node .led { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
 .node.host { font-family: var(--sans); font-weight: 700; font-size: 0.82rem; padding: 10px 16px; }
+
+/* Six conteneurs ne tiennent pas sur une ligne en dessous de ~860px :
+   le schema laisse place a une grille, et les liens n'ont plus de sens. */
+@media (max-width: 860px) {
+  .diagram {
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .diagram svg { display: none; }
+  .node { position: static; transform: none; justify-content: center; }
+  .node.host { grid-column: 1 / -1; }
+}
 
 .panel {
   margin-top: 32px;
@@ -413,7 +427,6 @@ header.top p {
 
 @media (max-width: 640px) {
   .metrics { grid-template-columns: 1fr 1fr; }
-  .diagram { height: 340px; }
 }
 
 .live-note {

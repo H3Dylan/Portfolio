@@ -143,7 +143,21 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <span class="chip">React</span><span class="chip">Node.js/Express</span><span class="chip">PostgreSQL/PostGIS</span><span class="chip">JWT</span><span class="chip">Docker</span><span class="chip">Proxmox VE</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
           </div>
           <a class="repo" href="https://github.com/H3Dylan/RoissyShare" target="_blank" rel="noopener">github.com/H3Dylan/RoissyShare →</a>
-          <a class="repo" href="/infra" style="border-top:none;padding-top:0;">Infra basée sur les mêmes briques que mon homelab →</a>
+          <a class="repo" href="/infra" style="border-top:none;padding-top:0;">Hébergé sur mon homelab, déployé en continu →</a>
+        </div>
+        <div class="card">
+          <h3>Ce portfolio</h3>
+          <p class="role-note mono">Solo · Astro + déploiement continu</p>
+          <p class="desc">
+            Le site que vous lisez. Généré en statique avec Astro, servi par nginx depuis mon
+            serveur personnel. Chaque push sur <span class="mono">main</span> déclenche la vérification du
+            build puis un déploiement par release horodatée, avec bascule atomique et retour
+            arrière possible.
+          </p>
+          <div class="chips" style="margin-bottom:14px;">
+            <span class="chip">Astro</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Nginx</span><span class="chip">GitHub Actions</span><span class="chip">Traefik</span>
+          </div>
+          <a class="repo" href="https://github.com/H3Dylan/Portfolio" target="_blank" rel="noopener">github.com/H3Dylan/Portfolio →</a>
         </div>
         <div class="card">
           <h3>Aetherfall</h3>
@@ -205,7 +219,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <div class="skill-group">
           <span class="g-label">DevOps &amp; outils</span>
           <div class="chips">
-            <span class="chip">Git</span><span class="chip">GitLab CI/CD</span><span class="chip">Docker</span><span class="chip">Ansible</span><span class="chip">Linux/UNIX</span><span class="chip">BIND (DNS)</span>
+            <span class="chip">Git</span><span class="chip">GitLab CI/CD</span><span class="chip">GitHub Actions</span><span class="chip">Docker</span><span class="chip">Ansible</span><span class="chip">Linux/UNIX</span><span class="chip">Proxmox VE</span><span class="chip">Traefik</span><span class="chip">Nginx</span><span class="chip">WireGuard</span><span class="chip">BIND (DNS)</span>
           </div>
         </div>
         <div class="skill-group">
@@ -227,14 +241,18 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <p class="hero-bio" style="margin:0 0 24px;">
         Les compétences DevOps ci-dessus — et celles déployées sur RoissyShare (Proxmox,
         WireGuard, Traefik) — je les pratique aussi sur mon temps libre : un serveur Proxmox
-        personnel tourne en continu à la maison, VPN, reverse proxy et monitoring compris.
+        personnel tourne en continu à la maison. Six conteneurs LXC, un plan d'adressage fixe,
+        un unique reverse proxy en frontal avec certificats renouvelés automatiquement, et deux
+        applications déployées par intégration continue — dont ce site, que vous lisez depuis
+        cette machine.
       </p>
       <div class="card" style="max-width:420px;">
         <h3>Infrastructure personnelle</h3>
-        <p class="role-note mono">Proxmox VE · homelab</p>
+        <p class="role-note mono">Proxmox VE · 6 LXC · homelab</p>
         <p class="desc">
-          VPN WireGuard, reverse proxy, stack de monitoring, services conteneurisés (LXC/Docker)
-          — administrés en autonomie.
+          VPN WireGuard, reverse proxy Traefik avec filtrage CrowdSec, supervision
+          Prometheus/Grafana, services conteneurisés et pipelines de déploiement — administrés
+          en autonomie.
         </p>
         <a class="repo" href="/infra">Voir la carte réseau interactive →</a>
       </div>

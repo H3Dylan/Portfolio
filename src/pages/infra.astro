@@ -12,10 +12,12 @@ import NetworkDiagram from "../components/NetworkDiagram";
       <a class="back mono" href="/">← Retour au portfolio</a>
       <h1>Infrastructure personnelle</h1>
       <p>
-        Un homelab Proxmox administré en autonomie, en dehors du cursus et du travail. Clique
-        sur un nœud pour voir son rôle et son état.
+        Un homelab Proxmox administré en autonomie, en dehors du cursus et du travail : six
+        conteneurs LXC derrière un unique reverse proxy, adressage fixe, accès par clé SSH
+        uniquement, et deux applications déployées par intégration continue — dont ce site.
+        Clique sur un nœud pour voir son rôle et son état.
       </p>
-      <span class="snapshot-tag"><span class="dot"></span>RELEVÉ STATIQUE — 25/08/2026</span>
+      <span class="snapshot-tag"><span class="dot"></span>RELEVÉ STATIQUE — 02/09/2026</span>
     </div>
   </header>
 
@@ -24,7 +26,7 @@ import NetworkDiagram from "../components/NetworkDiagram";
       <NetworkDiagram client:load />
 
       <div class="live-note">
-        <strong>Sur les stats en direct —</strong> ces chiffres sont un relevé figé au 25/08/2026,
+        <strong>Sur les stats en direct —</strong> ces chiffres sont un relevé figé au 02/09/2026,
         pas un flux temps réel. Brancher du vrai live demanderait d'exposer un petit point d'accès
         en lecture seule depuis le LXC monitoring (Prometheus/Grafana), passé derrière le
         reverse-proxy avec authentification et sans exposer les dashboards internes bruts sur

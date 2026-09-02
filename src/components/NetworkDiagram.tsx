@@ -1,10 +1,11 @@
 import { useState } from "react";
 
-type NodeId = "host" | "101" | "102" | "103" | "100";
+type NodeId = "host" | "101" | "102" | "103" | "104" | "105" | "106";
 
 interface NodeData {
   label: string;
   type: string;
+  ip: string;
   desc: string;
   tags: string[];
   cpu: number;
@@ -18,66 +19,97 @@ const data: Record<NodeId, NodeData> = {
   host: {
     label: "serveur",
     type: "Hôte Proxmox VE 9.2.2",
-    desc: "Le nœud physique qui héberge l'ensemble des services ci-dessous.",
+    ip: "192.168.1.100",
+    desc: "Le nœud physique qui héberge les six conteneurs ci-dessous. Chaque machine porte une adresse fixe dont le dernier octet reprend son identifiant Proxmox — une IP suffit à savoir de quel service il s'agit.",
     tags: [],
-    cpu: 1.3,
+    cpu: 0,
     cpuOf: 6,
-    mem: 26.1,
-    disk: 0.3,
-    uptime: "91j 17h",
+    mem: 19.4,
+    disk: 1,
+    uptime: "100j 01h",
   },
   "101": {
-    label: "wireguard-vpn",
-    type: "LXC",
-    desc: "Tunnel VPN WireGuard : point d'entrée sécurisé pour accéder au homelab à distance sans exposer les services directement sur internet.",
-    tags: [],
-    cpu: 0.0,
+    label: "wireguard",
+    type: "LXC 101",
+    ip: "192.168.1.101",
+    desc: "Tunnel VPN WireGuard : point d'entrée chiffré vers le réseau interne depuis l'extérieur, sans exposer les services d'administration sur internet.",
+    tags: ["vpn", "udp/51820"],
+    cpu: 0,
     cpuOf: 1,
-    mem: 4.0,
+    mem: 3.3,
     disk: 4.7,
-    uptime: "91j 11h",
+    uptime: "1j 05h",
   },
   "102": {
     label: "reverse-proxy",
-    type: "LXC",
-    desc: "Route le trafic entrant vers le bon service interne et gère la terminaison TLS.",
-    tags: ["community-script", "docker", "proxy"],
-    cpu: 0.5,
+    type: "LXC 102",
+    ip: "192.168.1.102",
+    desc: "Traefik en frontal : unique porte d'entrée HTTP/HTTPS, routage par nom de domaine, certificats Let's Encrypt renouvelés automatiquement. CrowdSec filtre le trafic malveillant en amont des applications.",
+    tags: ["traefik", "crowdsec", "docker"],
+    cpu: 0.3,
     cpuOf: 2,
-    mem: 25.2,
-    disk: 34.6,
-    uptime: "90j 14h",
+    mem: 21.8,
+    disk: 34.5,
+    uptime: "1j 04h",
   },
   "103": {
     label: "monitoring",
-    type: "LXC",
-    desc: "Stack de supervision : centralise les métriques (CPU, mémoire, uptime) de tous les services du cluster.",
-    tags: [],
-    cpu: 0.5,
+    type: "LXC 103",
+    ip: "192.168.1.103",
+    desc: "Stack de supervision Prometheus / Grafana : centralise les métriques CPU, mémoire et disque de l'ensemble des machines.",
+    tags: ["prometheus", "grafana"],
+    cpu: 3.8,
     cpuOf: 2,
-    mem: 12.1,
-    disk: 18.4,
-    uptime: "62j 13h",
+    mem: 12,
+    disk: 18.3,
+    uptime: "70j 22h",
   },
-  "100": {
-    label: "Web-server",
-    type: "VM (QEMU)",
-    desc: "Sert actuellement à déployer RoissyShare (projet d'équipe M2), et accueillera sans doute ce portfolio une fois prêt.",
-    tags: [],
-    cpu: 0.3,
+  "104": {
+    label: "archipelago",
+    type: "LXC 104",
+    ip: "192.168.1.104",
+    desc: "Serveur de jeu Archipelago, exposé via le reverse proxy sur son propre sous-domaine.",
+    tags: ["websocket"],
+    cpu: 0.7,
+    cpuOf: 1,
+    mem: 38.1,
+    disk: 8.2,
+    uptime: "1j 04h",
+  },
+  "105": {
+    label: "portfolio",
+    type: "LXC 105",
+    ip: "192.168.1.105",
+    desc: "Ce site. Un runner GitHub Actions y tourne : chaque push sur main déclenche la vérification du build, puis un déploiement par release horodatée avec bascule atomique et retour arrière possible.",
+    tags: ["nginx", "ci/cd", "astro"],
+    cpu: 0,
+    cpuOf: 1,
+    mem: 7,
+    disk: 14.7,
+    uptime: "1j 03h",
+  },
+  "106": {
+    label: "roissyshare",
+    type: "LXC 106",
+    ip: "192.168.1.106",
+    desc: "La plateforme RoissyShare et sa base PostgreSQL/PostGIS, en conteneurs Docker, avec son propre pipeline de déploiement. Migrée depuis une machine virtuelle : à charge égale, un conteneur ne réserve pas sa mémoire.",
+    tags: ["docker", "postgis", "ci/cd"],
+    cpu: 0.1,
     cpuOf: 2,
-    mem: 91.3,
-    disk: 0.0,
-    uptime: "91j 00h",
+    mem: 11.7,
+    disk: 20.1,
+    uptime: "0j 04h",
   },
 };
 
 const positions: { id: NodeId; left: number; host?: boolean }[] = [
   { id: "host", left: 50, host: true },
-  { id: "101", left: 15 },
-  { id: "102", left: 38 },
-  { id: "103", left: 62 },
-  { id: "100", left: 85 },
+  { id: "101", left: 8 },
+  { id: "102", left: 24.4 },
+  { id: "103", left: 40.8 },
+  { id: "104", left: 57.2 },
+  { id: "105", left: 73.6 },
+  { id: "106", left: 90 },
 ];
 
 export default function NetworkDiagram() {
@@ -118,7 +150,9 @@ export default function NetworkDiagram() {
       <div className="panel">
         <div className="panel-head">
           <h2>{d.label}</h2>
-          <span className="type mono">{d.type}</span>
+          <span className="type mono">
+            {d.type} · {d.ip}
+          </span>
         </div>
         <p className="desc">{d.desc}</p>
         {d.tags.length > 0 && (
