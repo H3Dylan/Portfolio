@@ -13,6 +13,12 @@ log "Paquets de base"
 apt-get update
 apt-get install -y curl git nginx ca-certificates gnupg
 
+# Sur le template Debian 12, la combinaison git 2.39 + libcurl/nghttp2 casse le
+# protocole git v2 sur HTTPS : "could not read Username" suivi de "expected
+# flush after ref listing", alors que le depot est public et joignable.
+# Forcer HTTP/1.1 evite le probleme sans desactiver le protocole v2.
+git config --system http.version HTTP/1.1
+
 log "Node.js 22 (package.json exige >= 22.12)"
 curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt-get install -y nodejs

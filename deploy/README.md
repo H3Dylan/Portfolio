@@ -167,3 +167,27 @@ Le deploiement manuel reste disponible a tout moment :
 ```sh
 pct exec 105 -- /opt/portfolio/deploy/deploy.sh
 ```
+
+## Depannage
+
+### `git fetch` echoue avec "could not read Username"
+
+Symptome, alors que le depot est public et que `curl https://github.com`
+repond normalement :
+
+```
+fatal: could not read Username for 'https://github.com': No such device or address
+fatal: expected flush after ref listing
+```
+
+Ce n'est pas un probleme d'authentification malgre le message. Sur le template
+Debian 12, git 2.39 combine a libcurl/nghttp2 casse le protocole git v2 sur
+HTTPS. Le correctif :
+
+```sh
+git config --system http.version HTTP/1.1
+```
+
+`setup-lxc.sh` l'applique desormais a la creation. Le LXC roissyshare (106)
+etait touche par le meme defaut : `actions/checkout` fonctionnait malgre tout,
+mais un `git fetch` manuel echouait.
