@@ -1,7 +1,8 @@
 # Plan d'adressage du homelab
 
-Etabli le 2026-09-01. Toutes les machines Proxmox sont en **IP statique**
-(configuree cote Proxmox / invite), aucune ne depend du DHCP de la Livebox.
+Etabli le 2026-09-01, mis a jour le 2026-09-02 (migration de roissyshare vers
+un LXC). Toutes les machines Proxmox sont en **IP statique** (configuree cote
+Proxmox / invite), aucune ne depend du DHCP de la Livebox.
 
 ## Convention
 
@@ -16,11 +17,14 @@ Etabli le 2026-09-01. Toutes les machines Proxmox sont en **IP statique**
 | `.103` | LXC 103 monitoring | LXC | `pct set` |
 | `.104` | LXC 104 archipelago | LXC | `pct set` |
 | `.105` | LXC 105 portfolio | LXC | `pct set` |
-| `.110` | VM 100 web-server | VM | `/etc/network/interfaces` de l'invite |
+| `.106` | LXC 106 roissyshare | LXC | `pct set` |
 
-**Exception unique** : la VM 100 prend `.110`, son VMID entrant en collision
-avec le `.100` de l'hyperviseur. Elle rentrera dans le rang le jour ou
-roissyshare migrera vers un LXC.
+Aucune exception : la convention est reguliere. La VM 100 (web-server), qui
+portait roissyshare en `.110`, a ete migree vers le LXC 106 le 2026-09-02 et
+est arretee.
+
+Le `.100` de l'hyperviseur interdit d'utiliser le VMID 100 pour une machine :
+en creer une prendrait le prochain ID libre.
 
 ## Plage DHCP
 
