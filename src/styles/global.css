@@ -1419,3 +1419,65 @@ html, body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   .snapshot-tag.direct .dot { animation: none; }
 }
+
+/* ---- Navigation segmentee ----
+   La pastille n'existe que si le script a tourne : sans lui la classe
+   .a-curseur est absente et la nav garde son aspect d'origine. */
+nav ul.a-curseur {
+  position: relative;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+}
+nav ul.a-curseur a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 7px 14px;
+  border-radius: 999px;
+  transition: color 0.24s ease;
+}
+nav ul.a-curseur a.est-actif { color: var(--ink); }
+
+.nav-slider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 32%, transparent),
+    color-mix(in srgb, var(--accent-2) 26%, transparent)
+  );
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  box-shadow: 0 0 18px -8px var(--glow);
+  transition:
+    transform 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.2s ease;
+}
+
+@media (max-width: 760px) {
+  nav ul.a-curseur { gap: 0; padding: 3px; }
+  nav ul.a-curseur a { padding: 6px 9px; }
+  .nav-slider { top: 3px; bottom: 3px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-slider { transition: opacity 0.2s ease; }
+}
+
+/* ---- Chronologie : cartes symetriques par rapport a la ligne ----
+   Les cartes de gauche inversent leur en-tete pour que la date se retrouve
+   du cote de la ligne centrale, comme celles de droite. */
+.job:nth-child(odd) .job-top { flex-direction: row-reverse; }
+
+@media (max-width: 860px) {
+  /* En colonne unique il n'y a plus de ligne centrale a longer. */
+  .job:nth-child(odd) .job-top { flex-direction: row; }
+}

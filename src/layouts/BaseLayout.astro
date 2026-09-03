@@ -436,10 +436,102 @@ const { title, description } = Astro.props;
         window.setTimeout(tick, 700); // laisse l'entree se jouer d'abord
       }
 
+      /** Transforme la liste de liens en barre segmentee : une pastille glisse
+       *  sous le lien survole, et revient sur la section en cours de lecture
+       *  des que le curseur s'en va. Elle est creee en JavaScript pour qu'un
+       *  visiteur sans script garde une navigation ordinaire. */
+      function initNav() {
+        const liste = document.querySelector<HTMLElement>("nav ul");
+        if (!liste || liste.querySelector(".nav-slider")) return;
+
+        const liens = Array.from(liste.querySelectorAll<HTMLAnchorElement>("a"));
+        if (liens.length === 0) return;
+
+        const curseur = document.createElement("span");
+        curseur.className = "nav-slider";
+        curseur.setAttribute("aria-hidden", "true");
+        liste.appendChild(curseur);
+        liste.classList.add("a-curseur");
+
+        // getBoundingClientRect plutot que offsetLeft : la mesure ne repose
+        // alors sur aucune hypothese quant a l'element positionne de reference.
+        const place = (lien: HTMLAnchorElement | null) => {
+          if (!lien || lien.offsetParent === null) {
+            curseur.style.opacity = "0";
+            return;
+          }
+          const cible = lien.getBoundingClientRect();
+          const repere = liste.getBoundingClientRect();
+          curseur.style.width = `${cible.width}px`;
+          curseur.style.transform = `translateX(${cible.left - repere.left}px)`;
+          curseur.style.opacity = "1";
+        };
+
+        const sections = liens
+          .map((lien) => ({
+            lien,
+            cible: document.querySelector<HTMLElement>(lien.getAttribute("href") || ""),
+          }))
+          .filter(
+            (s): s is { lien: HTMLAnchorElement; cible: HTMLElement } => s.cible !== null,
+          );
+
+        let actif: HTMLAnchorElement | null = null;
+
+        const majActif = () => {
+          // Le tiers haut de l'ecran sert de ligne de lecture : une section
+          // devient courante des qu'elle franchit ce repere.
+          const ligne = window.scrollY + window.innerHeight * 0.3;
+          let courant: HTMLAnchorElement | null = null;
+          for (const s of sections) {
+            if (s.cible.offsetTop <= ligne) courant = s.lien;
+          }
+          // En bas de page la derniere section l'emporte, meme trop courte
+          // pour avoir franchi le repere.
+          const bas =
+            window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+          if (bas && sections.length > 0) courant = sections[sections.length - 1].lien;
+
+          if (courant === actif) return;
+          liens.forEach((l) => l.classList.remove("est-actif"));
+          if (courant) courant.classList.add("est-actif");
+          actif = courant;
+          if (!liste.matches(":hover")) place(actif);
+        };
+
+        liens.forEach((lien) => {
+          lien.addEventListener("mouseenter", () => place(lien));
+          lien.addEventListener("focus", () => place(lien));
+        });
+        liste.addEventListener("mouseleave", () => place(actif));
+
+        let enAttente = false;
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (enAttente) return;
+            enAttente = true;
+            requestAnimationFrame(() => {
+              enAttente = false;
+              majActif();
+            });
+          },
+          { passive: true },
+        );
+        window.addEventListener("resize", () => {
+          majActif();
+          place(actif);
+        });
+
+        majActif();
+        place(actif);
+      }
+
       document.addEventListener("astro:page-load", () => {
         initAnimations();
         initPointerEffects();
         initTypewriter();
+        initNav();
       });
     </script>
   </body>
