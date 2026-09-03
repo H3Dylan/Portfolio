@@ -4,12 +4,16 @@
   --ink: #15171a;
   --ink-soft: #585f66;
   --line: #d8dadd;
-  --accent: #b8792d;
-  --accent-soft: #f3e4cc;
-  --accent-ink: #7a4d14;
-  --ok: #4a7c4e;
+  --accent: #7c3aed;
+  --accent-2: #ec4899;
+  --accent-soft: #f3e8ff;
+  --accent-ink: #6d28d9;
+  --glow: rgba(124, 58, 237, 0.45);
+  --glow-2: rgba(236, 72, 153, 0.4);
+  --ok: #10b981;
   --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --term: "JetBrains Mono", "DejaVu Sans Mono", "Ubuntu Mono", ui-monospace, monospace;
+  --serif: var(--term);
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
@@ -20,10 +24,13 @@
     --ink: #ededee;
     --ink-soft: #9aa0a6;
     --line: #2b2f35;
-    --accent: #e0a857;
-    --accent-soft: #332616;
-    --accent-ink: #f0c98a;
-    --ok: #7fbf83;
+    --accent: #a78bfa;
+    --accent-2: #f472b6;
+    --accent-soft: #2a1145;
+    --accent-ink: #c4b5fd;
+    --glow: rgba(167, 139, 250, 0.55);
+    --glow-2: rgba(244, 114, 182, 0.5);
+    --ok: #34d399;
   }
 }
 :root[data-theme="dark"] {
@@ -32,21 +39,31 @@
   --ink: #ededee;
   --ink-soft: #9aa0a6;
   --line: #2b2f35;
-  --accent: #e0a857;
-  --accent-soft: #332616;
-  --accent-ink: #f0c98a;
-  --ok: #7fbf83;
+  --accent: #a78bfa;
+  --accent-2: #f472b6;
+  --accent-soft: #2a1145;
+  --accent-ink: #c4b5fd;
+  --glow: rgba(167, 139, 250, 0.55);
+  --glow-2: rgba(244, 114, 182, 0.5);
+  --ok: #34d399;
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+/* Echelle globale : tout le site est dimensionne en rem, augmenter la base
+   agrandit l.ensemble de maniere homogene. */
+html { font-size: 110%; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--serif);
+  /* Monospace sur tout le site : le rendu terminal est assume. Le corps est
+     legerement reduit et l.interligne augmente, une police a chasse fixe
+     etant plus large et plus dense a lire qu.une police proportionnelle. */
+  font-family: var(--term);
+  font-size: 1rem;
+  line-height: 1.62;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -54,7 +71,10 @@ a { color: var(--accent-ink); }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .mono { font-family: var(--mono); }
-.wrap { max-width: 840px; margin: 0 auto; padding: 0 24px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+/* Le conteneur s.elargit pour les grilles, mais une ligne de texte reste
+   plafonnee autour de 70 caracteres pour rester lisible. */
+.hero-bio, section > .wrap > p:not(.snapshot-line) { max-width: 68ch; }
 
 /* ---- Nav ---- */
 nav {
@@ -99,7 +119,16 @@ nav a:hover { color: var(--ink); }
 }
 
 /* ---- Hero ---- */
-header.hero { padding: 72px 0 56px; }
+header.hero {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 90px 0 60px;
+  text-align: center;
+}
+header.hero .wrap { width: 100%; }
+header.hero .hero-bio { margin-left: auto; margin-right: auto; }
+header.hero .hero-cta { justify-content: center; }
 .kicker {
   font-family: var(--mono);
   font-size: 0.78rem;
@@ -166,20 +195,76 @@ section { padding: 56px 0; border-top: 1px solid var(--line); }
 }
 
 /* ---- Experience ---- */
-.timeline { display: flex; flex-direction: column; gap: 30px; }
-.job {
+/* Chronologie en quinconce : une ligne centrale, les cartes alternant de
+   part et d.autre, chacune sur sa propre rangee. */
+.timeline {
+  position: relative;
   display: grid;
-  grid-template-columns: 148px 1fr;
-  gap: 20px;
-  padding-bottom: 26px;
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: 1fr 1fr;
+  column-gap: 64px;
+  row-gap: 22px;
 }
-.job:last-child { border-bottom: none; padding-bottom: 0; }
-.job-date {
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: linear-gradient(var(--accent), var(--accent-2));
+  opacity: 0.55;
+  /* La ligne se dessine de haut en bas : --line est pilotee au defilement. */
+  transform: translateX(-50%) scaleY(var(--line, 1));
+  transform-origin: top;
+}
+/* Chaque carte occupe sa propre rangee, en alternant les colonnes. */
+.job:nth-child(1) { grid-column: 1; grid-row: 1; }
+.job:nth-child(2) { grid-column: 2; grid-row: 2; }
+.job:nth-child(3) { grid-column: 1; grid-row: 3; }
+.job:nth-child(4) { grid-column: 2; grid-row: 4; }
+.job:nth-child(5) { grid-column: 1; grid-row: 5; }
+.job:nth-child(6) { grid-column: 2; grid-row: 6; }
+
+/* Pastille posee sur la ligne centrale, face a chaque carte. */
+.job::before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 4px var(--bg), 0 0 16px var(--glow-2);
+  z-index: 2;
+}
+.job:nth-child(odd)::before { right: -32px; transform: translateX(50%); }
+.job:nth-child(even)::before { left: -32px; transform: translateX(-50%); }
+.job {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+.job:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 16px 40px -20px var(--glow);
+}
+.job-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.job-date { font-family: var(--mono); font-size: 0.72rem; color: var(--accent-2); }
+.job-kind {
   font-family: var(--mono);
-  font-size: 0.76rem;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   color: var(--ink-soft);
-  padding-top: 3px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 3px 9px;
 }
 .job-title {
   font-family: var(--sans);
@@ -193,18 +278,26 @@ section { padding: 56px 0; border-top: 1px solid var(--line); }
   margin: 0 0 12px;
   font-style: italic;
 }
-.job ul { margin: 0; padding-left: 18px; }
+/* Sans puces : le decalage et l.interligne suffisent a structurer la liste. */
+.job ul { margin: 0; padding: 0; list-style: none; }
+.job li + li { margin-top: 8px; }
 .job li { font-size: 0.95rem; line-height: 1.55; margin-bottom: 6px; color: var(--ink); }
 
-@media (max-width: 620px) {
-  .job { grid-template-columns: 1fr; gap: 6px; }
+@media (max-width: 900px) {
+  /* En colonne unique la ligne passe a gauche et les cartes s.y accrochent. */
+  .timeline { grid-template-columns: 1fr; padding-left: 26px; column-gap: 0; }
+  .timeline::before { left: 4px; transform: none; }
+  .job:nth-child(n) { grid-column: 1; grid-row: auto; }
+  .job::before, .job:nth-child(odd)::before, .job:nth-child(even)::before {
+    left: -26px; right: auto; transform: translateX(-50%);
+  }
 }
 
 /* ---- Projects ---- */
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 .card {
   background: var(--surface);
@@ -231,7 +324,6 @@ section { padding: 56px 0; border-top: 1px solid var(--line); }
   line-height: 1.55;
   color: var(--ink);
   margin: 0 0 14px;
-  flex-grow: 1;
 }
 .card a.repo {
   font-family: var(--mono);
@@ -243,8 +335,8 @@ section { padding: 56px 0; border-top: 1px solid var(--line); }
 }
 .card a.repo:hover { text-decoration: underline; }
 
-@media (max-width: 780px) {
-  .cards { grid-template-columns: 1fr 1fr; }
+@media (max-width: 1080px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
   .cards { grid-template-columns: 1fr; }
@@ -309,12 +401,6 @@ section { padding: 56px 0; border-top: 1px solid var(--line); }
 }
 
 /* ---- Formation ---- */
-.edu-list { display: flex; flex-direction: column; gap: 14px; }
-.edu-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
-.edu-item:last-child { border-bottom: none; padding-bottom: 0; }
-.edu-item .name { font-family: var(--sans); font-weight: 600; font-size: 0.95rem; }
-.edu-item .org { font-size: 0.85rem; color: var(--ink-soft); }
-.edu-item .date { font-family: var(--mono); font-size: 0.76rem; color: var(--ink-soft); white-space: nowrap; }
 
 /* ---- Contact / footer ---- */
 footer.contact { padding: 50px 0 70px; }
@@ -429,16 +515,881 @@ header.top p {
   .metrics { grid-template-columns: 1fr 1fr; }
 }
 
-.live-note {
-  margin: 44px 0 60px;
-  padding: 18px 20px;
-  background: var(--accent-soft);
-  border-left: 2px solid var(--accent);
-  font-size: 0.92rem;
-  line-height: 1.6;
-}
-.live-note strong { font-family: var(--sans); }
 
 footer.page-footer { padding: 0 0 60px; }
 footer.page-footer .wrap { border-top: 1px solid var(--line); padding-top: 22px; }
 footer.page-footer p { font-family: var(--mono); font-size: 0.76rem; color: var(--ink-soft); margin: 0; }
+
+/* ============================================================
+   ANIMATIONS
+   Tout est neutralise en fin de bloc si l'utilisateur a demande
+   moins de mouvement (prefers-reduced-motion).
+   ============================================================ */
+
+/* Apparition au defilement. La classe est posee en JS pour ne pas
+   masquer le contenu si le script ne s'execute pas. */
+.reveal { opacity: 0; transform: translateY(24px); }
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s ease var(--d, 0ms),
+              transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) var(--d, 0ms);
+}
+
+/* Flux de donnees le long des liens du schema reseau : le trait est
+   pointille et son decalage defile, ce qui simule du trafic. */
+.diagram svg line {
+  stroke-dasharray: 4 7;
+  animation: flux 1.8s linear infinite;
+}
+.diagram svg line.active { stroke-width: 2.2; animation-duration: 0.8s; }
+@keyframes flux { to { stroke-dashoffset: -11; } }
+
+/* Voyants d'etat */
+.node .led { animation: led 2.6s ease-in-out infinite; }
+.node[aria-pressed="true"] .led { animation-duration: 1.2s; }
+@keyframes led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* Barres de metriques : la largeur est pilotee par --w, la transition
+   suffit a produire le remplissage. */
+.bar span { transition: width 0.9s cubic-bezier(0.22, 0.61, 0.36, 1); }
+
+/* Survols */
+.node { transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
+.node:hover { transform: translate(-50%, -50%) scale(1.07); }
+.card { transition: transform 0.22s ease, border-color 0.22s ease; }
+.card:hover { transform: translateY(-4px); border-color: var(--accent); }
+.chip { transition: transform 0.15s ease, border-color 0.15s ease, color 0.15s ease; }
+.chip:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--accent-ink); }
+.repo-chip { transition: transform 0.15s ease, border-color 0.15s ease; }
+.repo-chip:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+/* En grille mobile les noeuds ne sont plus centres par transform */
+@media (max-width: 860px) {
+  .node:hover { transform: scale(1.03); }
+}
+
+/* Progression de lecture */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  z-index: 100;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+  .diagram svg line, .node .led { animation: none; }
+  .diagram svg line { stroke-dasharray: none; }
+  .bar span { transition: none; }
+  .node:hover, .card:hover, .chip:hover, .repo-chip:hover { transform: none; }
+  .scroll-progress { display: none; }
+}
+
+/* --- Trainee lumineuse du curseur ---
+   Canvas plein ecran derriere le contenu : chaque position laisse une
+   trace qui s.estompe, d.ou l.effet de trainee plutot que de simple halo. */
+.cursor-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.cursor-canvas.is-on { opacity: 1; }
+
+/* Le contenu passe au-dessus du canvas ; les sections etant transparentes,
+   la trainee reste visible derriere le texte. */
+/* La nav est exclue : elle a son propre position sticky et un z-index plus
+   eleve, que cette regle ecraserait. */
+header, section, footer { position: relative; z-index: 1; }
+
+/* --- Halo interne des cartes, pilote par --mx / --my --- */
+.card { position: relative; overflow: hidden; }
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    transparent 68%
+  );
+}
+.card:hover::before { opacity: 1; }
+.card > *:not(.card-go):not(h3):not(.card-live) { position: relative; z-index: 1; }
+
+/* --- Chips : apparition une par une ---
+   L'etat masque depend de .reveal, qui n'est posee qu'en JS : sans script,
+   les chips restent visibles au lieu de disparaitre. */
+.reveal .chip,
+.reveal .repo-chip,
+.reveal .tile,
+.reveal .tags span {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.reveal.is-visible .chip,
+.reveal.is-visible .repo-chip,
+.reveal.is-visible .tile,
+.reveal.is-visible .tags span {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease var(--cd, 0ms), transform 0.4s ease var(--cd, 0ms);
+}
+
+/* --- Parallaxe du hero --- */
+/* Fondu continu au defilement : l.opacite et le decalage sont recalcules
+   a chaque frame selon la distance au centre de l.ecran, donc l.effet est
+   reversible — remonter fait reapparaitre le bloc. */
+.roll {
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-canvas { display: none; }
+  .card::before { display: none; }
+  .reveal .chip, .reveal .repo-chip, .reveal .tile, .reveal .tags span { opacity: 1; transform: none; transition: none; }
+  .roll { transform: none !important; opacity: 1 !important; }
+}
+
+/* ============================================================
+   ACCENTS COLORES
+   La palette violet -> rose sert de fil conducteur : degrades sur
+   les titres et les boutons, halos colores sur les elements actifs.
+   ============================================================ */
+
+h1 {
+  background: linear-gradient(100deg, var(--ink) 30%, var(--accent) 62%, var(--accent-2) 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.kicker { color: var(--accent-2); }
+
+.btn.primary {
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 24px -8px var(--glow);
+}
+.btn.primary:hover {
+  background: linear-gradient(100deg, var(--accent-2), var(--accent));
+  color: #fff;
+  box-shadow: 0 10px 30px -8px var(--glow-2);
+}
+.btn:not(.primary):hover {
+  background: transparent;
+  border-color: var(--accent-2);
+  color: var(--accent-ink);
+  box-shadow: 0 0 20px -6px var(--glow-2);
+}
+
+/* Cartes : liseré en degrade et halo colore au survol */
+.card { border-top-color: transparent; background-clip: padding-box; }
+.card::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  z-index: 2;
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 16px 40px -18px var(--glow);
+}
+
+/* Chips */
+.chip:hover, .repo-chip:hover {
+  border-color: var(--accent-2);
+  color: var(--accent-ink);
+  box-shadow: 0 0 16px -6px var(--glow-2);
+}
+
+/* Diagramme : liens et noeuds colores */
+.diagram svg line { stroke: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.diagram svg line.active { stroke: var(--accent-2); }
+.node[aria-pressed="true"] {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 22px -6px var(--glow-2);
+}
+.node:hover { border-color: var(--accent); box-shadow: 0 0 18px -8px var(--glow); }
+.node .led { box-shadow: 0 0 8px var(--ok); }
+
+/* Barres de metriques en degrade */
+.bar span { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+/* Panneau et section infra */
+.panel { position: relative; border-top: 2px solid transparent; }
+.panel::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+/* Progression de lecture en degrade */
+.scroll-progress { background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+/* ---- Competences en cartes ---- */
+.skill-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 16px;
+}
+.skill-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+.skill-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 16px 40px -20px var(--glow);
+}
+.skill-card h3 {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1rem;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+  gap: 8px;
+}
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 78px;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-align: center;
+  padding: 12px 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--ink-soft);
+  background: color-mix(in srgb, var(--bg) 45%, transparent);
+  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+    box-shadow 0.18s ease, background 0.18s ease;
+}
+.tile:hover {
+  transform: translateY(-3px) scale(1.04);
+  border-color: var(--accent-2);
+  color: var(--accent-ink);
+  background: var(--accent-soft);
+  box-shadow: 0 8px 20px -8px var(--glow-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-card:hover, .tile:hover { transform: none; }
+}
+
+/* ---- Cartes projet cliquables ---- */
+.card {
+  text-decoration: none;
+  color: inherit;
+  padding-bottom: 44px;
+  border-radius: 12px;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-top .cat {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent-2);
+}
+.card-top .year { font-size: 0.7rem; color: var(--ink-soft); }
+.card .chips { margin-top: 4px; }
+.card-go {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  z-index: 2;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--accent-2);
+  opacity: 0.65;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.card:hover .card-go { opacity: 1; transform: translate(3px, -3px); }
+
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .card-go { transform: none; }
+}
+
+/* ---- Ligne d'entete du schema reseau ---- */
+.snapshot-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+.snapshot-line .hint {
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+.diagram-wrap { margin-top: 6px; }
+
+/* ---- Variantes d'apparition ---- */
+
+/* Masque : le titre remonte depuis sous son propre conteneur. */
+.mask-reveal { display: block; overflow: hidden; }
+.mask-reveal .mask-inner {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.reveal.is-visible .mask-reveal .mask-inner,
+.section-head.is-visible .mask-reveal .mask-inner { transform: none; }
+
+/* Le bloc parent d'un titre masque ne doit pas glisser lui aussi :
+   deux mouvements superposes brouillent l'effet. */
+.section-head.reveal { transform: none; }
+
+/* Arrivee laterale */
+.reveal.from-left { transform: translateX(-140px); }
+.reveal.from-left.is-visible { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mask-reveal .mask-inner { transform: none; transition: none; }
+  .reveal.from-left { transform: none; }
+}
+
+/* Titres et listes des cartes d'experience */
+.job h3.job-title {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 1.02rem;
+  margin: 0 0 3px;
+}
+.job .chips { margin-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .job:hover { transform: none; }
+}
+
+/* ---- Logos des tuiles de competences ---- */
+.tile img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  transition: transform 0.18s ease;
+}
+.tile em { font-style: normal; line-height: 1.2; }
+
+/* Logos monochromes (Simple Icons) : colores par masque pour suivre le
+   theme clair/sombre, contrairement aux logos Devicon qui sont deja teintes. */
+.tile.mono-logo i {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: var(--ink-soft);
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.tile.mono-logo:hover i { background: var(--accent-ink); }
+
+/* Sans logo : le libelle occupe la tuile, la hauteur reste alignee. */
+.tile.no-logo em { font-size: 0.72rem; }
+
+.tile:hover img, .tile:hover i { transform: scale(1.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile:hover img, .tile:hover i { transform: none; }
+}
+
+/* ============================================================
+   ECRAN D'ACCUEIL
+   ============================================================ */
+
+/* Contenu accessible aux lecteurs d'ecran sans etre affiche. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Titre machine a ecrire : hauteur figee sur deux lignes pour que le reste
+   de la page ne sursaute pas quand le texte change de longueur. */
+h1.typed {
+  min-height: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.caret {
+  display: inline-block;
+  width: 3px;
+  height: 0.92em;
+  background: var(--accent-2);
+  animation: caret-blink 1s steps(1) infinite;
+  -webkit-text-fill-color: initial;
+}
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Entree : chaque element glisse depuis la gauche, en cascade. */
+@keyframes hero-slide {
+  from { opacity: 0; transform: translateX(-46px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-enter > * {
+  animation: hero-slide 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.hero-enter > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-enter > *:nth-child(2) { animation-delay: 0.18s; }
+.hero-enter > *:nth-child(3) { animation-delay: 0.31s; }
+.hero-enter > *:nth-child(4) { animation-delay: 0.44s; }
+.hero-enter > *:nth-child(5) { animation-delay: 0.62s; }
+
+/* Invite a defiler */
+.hero-scroll {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 54px;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.hero-scroll-line {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--accent-2), transparent);
+  animation: scroll-hint 1.8s ease-in-out infinite;
+}
+@keyframes scroll-hint {
+  0%, 100% { transform: scaleY(0.4); transform-origin: top; opacity: 0.5; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+}
+.hero-scroll:hover { color: var(--accent-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter > * { animation: none; }
+  .caret, .hero-scroll-line { animation: none; }
+}
+
+/* ---- Ecran d'accueil facon terminal ---- */
+
+/* Le nom passe en monospace : c'est ce qui donne l'aspect terminal. */
+header.hero h1 {
+  font-family: var(--term);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: none;
+  color: var(--ink);
+  -webkit-text-fill-color: currentColor;
+  margin: 0 0 14px;
+}
+header.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(100deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Ligne du role : c'est elle qui s'ecrit, le nom reste fixe. */
+.hero-role {
+  font-family: var(--term);
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  font-weight: 500;
+  color: var(--accent-ink);
+  min-height: 1.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin: 0 0 22px;
+}
+
+/* Pastille de disponibilite */
+.kicker .dot-ok {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  margin-right: 9px;
+  box-shadow: 0 0 8px var(--ok);
+  animation: led 2.4s ease-in-out infinite;
+}
+header.hero .kicker {
+  margin: 30px 0 0;
+  color: var(--ink-soft);
+  font-size: 0.72rem;
+}
+
+/* ---- Ajustements lies au passage en chasse fixe ----
+   Une police monospace occupe plus de largeur : on resserre legerement les
+   corps de texte et on elargit les mesures de lecture pour compenser. */
+.hero-bio { font-size: 1.02rem; line-height: 1.72; max-width: 58ch; }
+.card p.desc, .job li { font-size: 0.92rem; line-height: 1.62; }
+.section-head h2 { letter-spacing: -0.02em; }
+.job-title, .card h3, .skill-card h3 { letter-spacing: -0.01em; }
+.hero-bio, section > .wrap > p:not(.snapshot-line) { max-width: 62ch; }
+
+/* ---- Invite de commande devant le role ---- */
+.prompt {
+  color: var(--ink-soft);
+  margin-right: 9px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.prompt b { color: var(--ok); font-weight: 500; }
+.prompt i { color: var(--accent); font-style: normal; }
+
+@media (max-width: 560px) {
+  .prompt { font-size: 0.8em; }
+}
+
+/* La zone de frappe a une largeur figee, calee sur le libelle le plus long
+   ("Développeur Fullstack", 21 caracteres). En chasse fixe l'unite ch est
+   exacte : la ligne garde donc la meme largeur quel que soit le texte, et
+   l'invite de commande ne se deplace plus a chaque caractere. */
+.typed-wrap {
+  display: inline-block;
+  min-width: 22ch;
+  text-align: left;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .typed-wrap { min-width: 0; }
+  .hero-role { justify-content: flex-start; }
+}
+
+/* Arrivee depuis la droite, pour les cartes de la colonne droite. */
+.reveal.from-right { transform: translateX(140px); }
+.reveal.from-right.is-visible { transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal.from-right { transform: none; }
+}
+
+/* Un glissement de 140 px depasse la zone visible pendant l'animation :
+   clip evite la barre de defilement horizontale, sans creer de conteneur
+   de defilement (ce que ferait overflow hidden, cassant la nav collante). */
+html, body { overflow-x: clip; }
+
+/* Les cartes glissent de plus loin : on allonge un peu la duree pour que le
+   mouvement reste fluide plutot que precipite. */
+.reveal.from-left.is-visible,
+.reveal.from-right.is-visible {
+  transition: opacity 0.7s ease var(--d, 0ms),
+              transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) var(--d, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sans animation, la ligne doit etre entierement visible d'emblee. */
+  .timeline::before { transform: translateX(-50%); }
+}
+
+/* ---- Pictogramme des cartes projet ---- */
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin: 2px 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    color-mix(in srgb, var(--accent-2) 12%, transparent)
+  );
+  color: var(--accent-ink);
+  transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+}
+.card-icon svg { width: 22px; height: 22px; }
+.card:hover .card-icon {
+  transform: translateY(-2px) rotate(-4deg);
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .card-icon { transform: none; }
+}
+
+/* Chips portant un logo */
+.chip.has-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.chip.has-logo img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ---- Marque de l'employeur ou de l'etablissement ----
+   Logo quand il en existe un dans les bases libres, monogramme sinon :
+   recuperer des logos de marque ailleurs poserait autant un probleme de
+   qualite que de droits. */
+.job-org {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.org-mono,
+.org-img {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  object-fit: cover;
+}
+/* Le logo est monochrome : un masque le teinte et le fait suivre le theme. */
+.org-mono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--term);
+  font-size: 0.68rem;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  color: var(--accent-ink);
+}
+
+
+/* ---- Apercu du site pour les projets reellement heberges ----
+   La carte n'est plus un <a> : un lien imbrique dans un lien est invalide,
+   et il en faut deux ici (le depot et le site). Le titre porte le lien
+   principal, etire sur toute la carte, et le lien vers le site passe
+   au-dessus. */
+/* Le titre doit rester non positionne pour que le lien etire prenne la carte
+   entiere comme reference, et non la seule boite du titre. Le halo repasse
+   donc sous le contenu via un z-index negatif, isole dans la carte. */
+.card { isolation: isolate; }
+.card::before { z-index: -1; }
+.card-main {
+  color: inherit;
+  text-decoration: none;
+}
+.card-main::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+.card:hover .card-main { color: var(--accent-ink); }
+
+.card-shot {
+  /* Pleine largeur : on annule le padding de la carte. */
+  margin: -20px -20px 16px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.card-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.card:hover .card-shot img { transform: scale(1.04); }
+.shot-host {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+}
+.shot-host .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #46d17f;
+  box-shadow: 0 0 8px #46d17f;
+}
+
+.card-live {
+  position: relative;
+  z-index: 4;
+  align-self: flex-start;
+  font-size: 0.74rem;
+  color: var(--accent-2);
+  text-decoration: none;
+  padding: 6px 0 0;
+}
+.card-live:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .card-shot img { transform: none; }
+}
+
+/* Projet sans site en ligne : un cadre de meme gabarit garde l'alignement
+   des quatre cartes, sans inventer de visuel. */
+.card-shot.is-empty {
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0 9px,
+      color-mix(in srgb, var(--line) 40%, transparent) 9px 10px
+    ),
+    var(--bg);
+}
+.shot-host.is-off { color: var(--ink-soft); }
+.shot-host.is-off .dot {
+  background: var(--ink-soft);
+  box-shadow: none;
+}
+
+/* ---- Carte d'introduction du homelab ----
+   Un fond distinct du reste des cartes : c'est la seule section ou je parle
+   d'une infrastructure que j'administre, autant que le bloc se detache. */
+.lab-intro {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 28px;
+  margin: 0 0 16px;
+  padding: 22px 24px 22px 27px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      color-mix(in srgb, var(--accent-2) 7%, transparent) 58%,
+      transparent
+    ),
+    var(--surface);
+}
+.lab-intro::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+}
+.lab-lead {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.68;
+  color: var(--ink);
+}
+
+/* Fiche technique : ce que le paragraphe disait en prose, en lecture directe. */
+.lab-specs {
+  margin: 0;
+  align-content: start;
+}
+.lab-specs > div {
+  display: grid;
+  grid-template-columns: 104px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  /* Pointille dessine plutot que border-dashed : le tiret par defaut du
+     navigateur est trop fin, et --line se confond avec le fond teinte. */
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 65%, transparent) 0 4px,
+    transparent 4px 10px
+  );
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+.lab-specs > div:first-child {
+  background-image: none;
+  padding-top: 0;
+}
+.lab-specs dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent-2);
+  padding-top: 2px;
+}
+.lab-specs dd {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .lab-intro {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}

@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -22,8 +23,424 @@ const { title, description } = Astro.props;
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap"
     />
+    <ClientRouter />
   </head>
   <body>
+    <div class="scroll-progress" id="scroll-progress"></div>
     <slot />
+
+    <script>
+      // Les classes d'animation sont posees en JS : si le script ne s'execute
+      // pas, le contenu reste visible au lieu d'etre masque par du CSS.
+      function initAnimations() {
+        const bar = document.getElementById("scroll-progress");
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          if (bar) bar.remove();
+          return;
+        }
+
+        // --- apparition au defilement ---
+        // Cibles choisies pour ne pas s'imbriquer : animer un parent et son
+        // enfant produirait un double fondu peu lisible.
+        const targets = document.querySelectorAll(
+          // Ne jamais cibler un element rendu par React (.diagram, .panel) :
+          // modifier son className avant l'hydratation provoque un mismatch.
+          ".section-head, .hero-bio, .hero-cta, .card, .job, .skill-card, .lab-intro, .other-repos, .contact-row, .diagram-wrap",
+        );
+
+        targets.forEach((el) => el.classList.add("reveal"));
+
+        // Masque sur les titres de section : le texte est decale de sa propre
+        // hauteur dans un conteneur en overflow hidden, puis remonte — il
+        // apparait comme derriere un rideau.
+        document.querySelectorAll<HTMLElement>(".section-head h2").forEach((h) => {
+          if (h.querySelector(".mask-inner")) return;
+          const inner = document.createElement("span");
+          inner.className = "mask-inner";
+          inner.innerHTML = h.innerHTML;
+          h.innerHTML = "";
+          h.appendChild(inner);
+          h.classList.add("mask-reveal");
+        });
+
+        // Chronologie en quinconce : chaque carte arrive du cote ou elle se
+        // trouve. L'index repart de zero pour chaque chronologie, sinon la
+        // seconde heriterait de la parite de la premiere.
+        document.querySelectorAll(".timeline").forEach((tl) => {
+          Array.from(tl.children).forEach((card, i) => {
+            card.classList.add(i % 2 === 0 ? "from-left" : "from-right");
+          });
+        });
+
+        // Cascade : chaque element d'une meme grille demarre 70 ms apres le precedent.
+        document.querySelectorAll(".cards, .skill-cards, .timeline").forEach((grid) => {
+          Array.from(grid.children).forEach((child, i) => {
+            (child as HTMLElement).style.setProperty("--d", `${i * 70}ms`);
+          });
+        });
+
+        // Revelation basee sur la position reelle plutot que sur un
+        // IntersectionObserver : le comportement est identique mais previsible,
+        // et un element ne peut pas rester masque parce qu'un callback n'a pas
+        // ete rappele.
+        let pending = false;
+        const reveal = () => {
+          pending = false;
+          const limit = window.innerHeight * 0.92;
+          targets.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const visible = rect.top < limit && rect.bottom > 0;
+            // toggle et non add : l'element se re-masque en quittant l'ecran,
+            // donc l'animation se rejoue a l'envers quand on remonte.
+            el.classList.toggle("is-visible", visible);
+          });
+        };
+        const schedule = () => {
+          if (pending) return;
+          pending = true;
+          requestAnimationFrame(reveal);
+        };
+
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", schedule);
+
+        // Filet au chargement : polices, images ou hydratation peuvent decaler
+        // la mise en page apres le premier calcul. On repasse quelques secondes,
+        // puis on s'en remet aux evenements de defilement.
+        const ticker = setInterval(reveal, 250);
+        setTimeout(() => clearInterval(ticker), 4000);
+
+        reveal();
+
+        // --- logo dans les chips, quand il en existe un ---
+        // Fait en script plutot qu'en dur dans le HTML : une trentaine de
+        // balises a maintenir a la main pour du decoratif. Sans script, les
+        // chips restent parfaitement lisibles en texte.
+        const LOGOS: Record<string, string> = {
+          angular: "angular", ansible: "ansible", astro: "astro", c: "c",
+          "c++": "cplusplus", css3: "css3", docker: "docker", git: "git",
+          "github actions": "githubactions", "gitlab ci": "gitlab",
+          "gitlab ci/cd": "gitlab", html5: "html5", java: "java",
+          javascript: "javascript", "linux/unix": "linux", linux: "linux",
+          mariadb: "mariadb", mongodb: "mongodb", mysql: "mysql", nginx: "nginx",
+          "node.js": "nodejs", php: "php", postgis: "postgresql",
+          postgresql: "postgresql", "proxmox ve": "proxmox", proxmox: "proxmox",
+          python: "python", react: "react", traefik: "traefik",
+          typescript: "typescript", wordpress: "wordpress",
+        };
+        document.querySelectorAll<HTMLElement>(".chip").forEach((chip) => {
+          if (chip.querySelector("img")) return;
+          const file = LOGOS[chip.textContent!.trim().toLowerCase()];
+          if (!file) return;
+          const img = document.createElement("img");
+          img.src = `/icons/${file}.svg`;
+          img.alt = "";
+          img.loading = "lazy";
+          chip.prepend(img);
+          chip.classList.add("has-logo");
+        });
+
+        // --- chips : un decalage par element pour l'effet d'egrenage ---
+        document.querySelectorAll(".reveal").forEach((block) => {
+          block.querySelectorAll<HTMLElement>(".chip, .repo-chip, .tile, .tags span").forEach((chip, i) => {
+            chip.style.setProperty("--cd", `${i * 45}ms`);
+          });
+        });
+
+        // --- les lignes des chronologies se dessinent au defilement ---
+        const timelines = Array.from(document.querySelectorAll<HTMLElement>(".timeline"));
+        if (timelines.length) {
+          timelines.forEach((t) => t.style.setProperty("--line", "0"));
+          let lPending = false;
+          const drawLine = () => {
+            lPending = false;
+            timelines.forEach((timeline) => {
+              const r = timeline.getBoundingClientRect();
+              // Commence quand le haut de la section atteint 85 % de l'ecran,
+              // se termine lorsqu'on en a parcouru l'essentiel.
+              const p = Math.min(Math.max((innerHeight * 0.85 - r.top) / (r.height * 0.75), 0), 1);
+              timeline.style.setProperty("--line", String(p));
+            });
+          };
+          const scheduleLine = () => {
+            if (lPending) return;
+            lPending = true;
+            requestAnimationFrame(drawLine);
+          };
+          window.addEventListener("scroll", scheduleLine, { passive: true });
+          window.addEventListener("resize", scheduleLine);
+          // Meme filet au chargement, puis on suit le defilement.
+          const lTicker = setInterval(drawLine, 250);
+          setTimeout(() => clearInterval(lTicker), 4000);
+          drawLine();
+        }
+
+        // --- progression de lecture ---
+        if (bar) {
+          let ticking = false;
+          const update = () => {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            const ratio = max > 0 ? window.scrollY / max : 0;
+            bar.style.transform = `scaleX(${Math.min(ratio, 1)})`;
+            ticking = false;
+          };
+          const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(update);
+          };
+          window.addEventListener("scroll", onScroll, { passive: true });
+          update();
+        }
+      }
+
+      // Effets lies au pointeur et au defilement. Attaches une seule fois :
+      // avec les transitions de page le document persiste, et les rattacher
+      // a chaque navigation empilerait les ecouteurs.
+      function initPointerEffects() {
+        if ((window as any).__pointerFx) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (!window.matchMedia("(pointer: fine)").matches) return; // inutile au doigt
+        (window as any).__pointerFx = true;
+
+        // Fond en constellation : des points derivent lentement et se relient
+        // entre eux quand ils sont proches. Le curseur tire ses propres liens
+        // vers les points alentour. Ecrit en canvas natif plutot qu.avec
+        // particles.js, non maintenue depuis des annees pour 30 Ko.
+        const canvas = document.createElement("canvas");
+        canvas.className = "cursor-canvas is-on";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext("2d")!;
+
+        let dpr = 1;
+        let W = 0;
+        let H = 0;
+        const resize = () => {
+          dpr = Math.min(window.devicePixelRatio || 1, 2);
+          W = innerWidth;
+          H = innerHeight;
+          canvas.width = W * dpr;
+          canvas.height = H * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        resize();
+        window.addEventListener("resize", resize);
+
+        const toRgb = (value: string, fallback: [number, number, number]) => {
+          const m = /^#?([da-f]{2})([da-f]{2})([da-f]{2})$/i.exec(value.trim());
+          if (!m) return fallback;
+          return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)] as [number, number, number];
+        };
+        const css = getComputedStyle(document.documentElement);
+        const c1 = toRgb(css.getPropertyValue("--accent"), [167, 139, 250]);
+        const c2 = toRgb(css.getPropertyValue("--accent-2"), [244, 114, 182]);
+        const rgba = (c: [number, number, number], a: number) => `rgba(${c[0]}, ${c[1]}, ${c[2]}, ${a})`;
+
+        const LIEN = 150; // distance de liaison entre points
+        const GRAB = 150; // portee du curseur
+
+        type P = { x: number; y: number; vx: number; vy: number; r: number; a: number; rose: boolean };
+        let points: P[] = [];
+        const semer = () => {
+          // Densite constante quelle que soit la taille de l.ecran.
+          const n = Math.min(Math.round((W * H) / 13000), 90);
+          points = Array.from({ length: n }, () => ({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+            r: 1 + Math.random() * 1.6,
+            a: 0.25 + Math.random() * 0.35,
+            rose: Math.random() > 0.65,
+          }));
+        };
+        semer();
+        window.addEventListener("resize", semer);
+
+        let mx = -999;
+        let my = -999;
+        document.addEventListener(
+          "mousemove",
+          (e) => {
+            mx = e.clientX;
+            my = e.clientY;
+
+            // Halo interne de la carte survolee, pilote par --mx / --my.
+            const card = (e.target as HTMLElement)?.closest?.(".card") as HTMLElement | null;
+            if (card) {
+              const r = card.getBoundingClientRect();
+              card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+              card.style.setProperty("--my", `${e.clientY - r.top}px`);
+            }
+          },
+          { passive: true },
+        );
+        document.addEventListener("mouseleave", () => { mx = -999; my = -999; });
+
+        const draw = () => {
+          ctx.clearRect(0, 0, W, H);
+
+          for (const p of points) {
+            p.x += p.vx;
+            p.y += p.vy;
+            // Rebond sur les bords, pour garder les points dans le cadre.
+            if (p.x < 0 || p.x > W) p.vx *= -1;
+            if (p.y < 0 || p.y > H) p.vy *= -1;
+          }
+
+          // Liens entre points proches
+          for (let i = 0; i < points.length; i++) {
+            const a = points[i];
+            for (let j = i + 1; j < points.length; j++) {
+              const b = points[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 > LIEN * LIEN) continue;
+              const t = 1 - Math.sqrt(d2) / LIEN;
+              ctx.strokeStyle = rgba(c1, t * 0.16);
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+
+          // Liens tires par le curseur, plus marques que les precedents
+          if (mx > -900) {
+            for (const p of points) {
+              const dx = p.x - mx;
+              const dy = p.y - my;
+              const d2 = dx * dx + dy * dy;
+              if (d2 > GRAB * GRAB) continue;
+              const t = 1 - Math.sqrt(d2) / GRAB;
+              ctx.strokeStyle = rgba(c2, t * 0.4);
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(mx, my);
+              ctx.stroke();
+            }
+          }
+
+          for (const p of points) {
+            ctx.fillStyle = rgba(p.rose ? c2 : c1, p.a);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          requestAnimationFrame(draw);
+        };
+        requestAnimationFrame(draw);
+
+        // Fondu continu pilote par la position : un bloc apparait en entrant
+        // dans la zone centrale et s'estompe en s'en eloignant, par le haut
+        // comme par le bas. Rien n'est memorise, donc l'effet se rejoue a
+        // l'identique quand on remonte.
+        const blocks = Array.from(
+          document.querySelectorAll<HTMLElement>("header.hero, section, footer.contact"),
+        );
+        blocks.forEach((b) => b.classList.add("roll"));
+
+        const SHIFT = 26; // px de decalage vertical a pleine disparition
+
+        let pending = false;
+        const applyRoll = () => {
+          pending = false;
+          const vh = window.innerHeight;
+          const enHaut = window.scrollY <= 2;
+          const enBas =
+            window.scrollY + vh >= document.documentElement.scrollHeight - 2;
+          for (const el of blocks) {
+            const rect = el.getBoundingClientRect();
+            // Ignorer ce qui est hors champ : rien a calculer.
+            if (rect.bottom < -200 || rect.top > vh + 200) continue;
+
+            // Distance au centre de l'ecran, signee : negative si le bloc est
+            // au-dessus, positive s'il est en dessous, nulle tant qu'il
+            // chevauche le centre. Un bloc en cours de lecture reste donc
+            // parfaitement droit, et ne s'incline qu'une fois ecarte.
+            const mid = vh / 2;
+            let dist = 0;
+            if (rect.bottom < mid) dist = rect.bottom - mid;
+            else if (rect.top > mid) dist = rect.top - mid;
+
+            // En haut et en bas de page, certains blocs ne peuvent plus
+            // atteindre le centre : les attenuer les condamnerait a rester
+            // ternes en permanence, comme le pied de page.
+            if (dist > 0 && enBas) dist = 0;
+            if (dist < 0 && enHaut) dist = 0;
+
+            if (dist === 0) {
+              el.style.transform = "";
+              el.style.opacity = "";
+              continue;
+            }
+
+            const p = Math.min(Math.abs(dist) / mid, 1);
+            // Le bloc s'efface et glisse legerement dans la direction ou il
+            // part : vers le haut s'il sort par le haut, vers le bas sinon.
+            const shift = dist < 0 ? -p * SHIFT : p * SHIFT;
+            el.style.transform = `translateY(${shift}px)`;
+            el.style.opacity = String(1 - p * 0.95);
+          }
+        };
+        const onScroll = () => {
+          if (pending) return;
+          pending = true;
+          requestAnimationFrame(applyRoll);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        applyRoll();
+      }
+
+      // Machine a ecrire : ecrit une phrase, marque une pause, l'efface, passe
+      // a la suivante. Le texte reel reste dans un span lisible par les
+      // lecteurs d'ecran, cette animation n'en est qu'une representation.
+      function initTypewriter() {
+        const out = document.querySelector<HTMLElement>(".typed-out");
+        if (!out) return;
+
+        const phrases = ["Développeur Fullstack", "DevOps"];
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          out.textContent = phrases[0];
+          return;
+        }
+
+        let phrase = 0;
+        let chars = 0;
+        let erasing = false;
+
+        const tick = () => {
+          const target = phrases[phrase];
+          chars += erasing ? -1 : 1;
+          out.textContent = target.slice(0, chars);
+
+          let wait = erasing ? 45 : 85;
+          if (!erasing && chars === target.length) {
+            erasing = true;
+            wait = 1900; // laisse le temps de lire
+          } else if (erasing && chars === 0) {
+            erasing = false;
+            phrase = (phrase + 1) % phrases.length;
+            wait = 420;
+          }
+          window.setTimeout(tick, wait);
+        };
+
+        window.setTimeout(tick, 700); // laisse l'entree se jouer d'abord
+      }
+
+      document.addEventListener("astro:page-load", () => {
+        initAnimations();
+        initPointerEffects();
+        initTypewriter();
+      });
+    </script>
   </body>
 </html>

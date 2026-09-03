@@ -1,17 +1,18 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import NetworkDiagram from "../components/NetworkDiagram";
 ---
 
 <BaseLayout
   title="Dylan Bouillon"
-  description="Portfolio de Dylan Bouillon, développeur fullstack/DevOps — expérience, projets et compétences."
+  description="Portfolio de Dylan Bouillon, développeur fullstack/DevOps : expérience, projets et compétences."
 >
   <nav>
     <div class="wrap">
       <a class="brand" href="#top">DB.</a>
       <ul>
-        <li><a href="#profil">Profil</a></li>
-        <li><a href="#experience">Expérience</a></li>
+        <li><a href="#experience">Expériences</a></li>
+        <li><a href="#homelab">Homelab</a></li>
         <li><a href="#projets">Projets</a></li>
         <li><a href="#competences">Compétences</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -20,107 +21,156 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   </nav>
 
   <header class="hero" id="top">
-    <div class="wrap">
-      <p class="kicker mono">GUYANCOURT (78) · ÎLE-DE-FRANCE · OUVERT À UN CDI</p>
-      <h1>Dylan Bouillon</h1>
-      <p class="hero-role">Développeur Fullstack — DevOps</p>
+    <div class="wrap hero-enter">
+      <h1>Dylan <em>Bouillon</em></h1>
+      <p class="hero-role mono">
+        <span class="prompt" aria-hidden="true"><b>dylan@homelab</b>:<i>~</i>$</span>
+        <!-- Le role est ecrit en JavaScript : on garde une version en texte
+             pour les moteurs de recherche et les lecteurs d.ecran. -->
+        <span class="sr-only">Développeur Fullstack et DevOps</span><span
+          class="typed-wrap"
+          aria-hidden="true"
+          ><span class="typed-out"></span><span class="caret"></span></span
+        >
+      </p>
       <p class="hero-bio">
-        Diplômé d'un Master Développement Fullstack en 2026, après trois ans d'alternance chez
-        Orange en intégration et validation. Des applications web de bout en bout (Angular,
-        React, PHP) à l'outillage de la chaîne de livraison (GitLab CI/CD, Docker, Ansible) — et
-        un serveur personnel administré en autonomie sur mon temps libre.
+        Master Développement Fullstack en 2026, trois ans d'alternance chez Orange en intégration
+        et validation. Des applications web de bout en bout à l'infrastructure qui les héberge.
       </p>
       <div class="hero-cta">
         <a class="btn primary" href="#projets">Voir les projets</a>
         <a class="btn" href="#contact">Me contacter</a>
       </div>
+      <p class="kicker mono">
+        <span class="dot-ok"></span>GUYANCOURT (78) · ÎLE-DE-FRANCE · OUVERT À UN CDI
+      </p>
+      <a class="hero-scroll mono" href="#experience" aria-label="Faire défiler">
+        <span class="hero-scroll-line"></span>
+        défiler
+      </a>
     </div>
   </header>
 
-  <section id="profil">
-    <div class="wrap">
-      <div class="section-head"><h2>Profil</h2></div>
-      <p class="hero-bio" style="margin:0;">
-        Trois ans passés côté infrastructure critique — reprise de scripts legacy, outillage
-        CI/CD, DNS — m'ont appris à livrer dans un environnement où l'erreur coûte cher. En
-        parallèle, mes projets personnels me servent de terrain pour explorer ce que je ne
-        pratique pas encore au quotidien : nouvelles stacks, architecture produit, jeux.
-      </p>
-    </div>
-  </section>
 
   <section id="experience">
     <div class="wrap">
       <div class="section-head">
-        <h2>Expérience</h2>
+        <h2>Expériences</h2>
         <span class="count mono">4 postes · 2022 – 2026</span>
       </div>
       <div class="timeline">
-        <div class="job">
-          <div class="job-date mono">SEPT. 2024<br />– AOÛT 2026</div>
-          <div>
-            <p class="job-title">Développeur Fullstack / DevOps — Alternance</p>
-            <p class="job-org">Orange, équipe PIVA (intégration et validation, périmètre DNS) · Guyancourt</p>
-            <ul>
-              <li>
-                Reprise et correction d'un script legacy en C au cœur de l'infrastructure DNS
-                (BIND) d'Orange, remis en service pour l'équipe.
-              </li>
-              <li>
-                Conception d'un linter Ansible déclenché sur chaque pipeline GitLab CI, déployé
-                sur l'ensemble du projet.
-              </li>
-              <li>
-                Développement d'un générateur de flipbook en JavaScript en remplacement des
-                newsletters PDF, adopté par plusieurs services RH.
-              </li>
-              <li>Maintenance et modernisation des pipelines CI/CD de l'équipe.</li>
-            </ul>
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">SEPT. 2024 – AOÛT 2026</span>
+            <span class="job-kind mono">Alternance</span>
           </div>
-        </div>
+          <h3 class="job-title">Développeur Fullstack / DevOps</h3>
+          <p class="job-org"><img class="org-img" src="/icons/org-orange.svg" alt="" />Orange, équipe PIVA · intégration et validation, périmètre DNS · Guyancourt</p>
+          <ul>
+            <li>
+              Reprise et correction d'un script legacy en C au cœur de l'infrastructure DNS
+              (BIND) d'Orange, remis en service pour l'équipe.
+            </li>
+            <li>
+              Conception d'un linter Ansible déclenché sur chaque pipeline GitLab CI, déployé
+              sur l'ensemble du projet.
+            </li>
+            <li>
+              Développement d'un générateur de flipbook en JavaScript en remplacement des
+              newsletters PDF, adopté par plusieurs services RH.
+            </li>
+            <li>Maintenance et modernisation des pipelines CI/CD de l'équipe.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">C</span><span class="chip">Ansible</span><span class="chip">GitLab CI</span><span class="chip">BIND</span><span class="chip">JavaScript</span>
+          </div>
+        </article>
 
-        <div class="job">
-          <div class="job-date mono">SEPT. 2023<br />– AOÛT 2024</div>
-          <div>
-            <p class="job-title">Développeur Web — Alternance</p>
-            <p class="job-org">Orange France</p>
-            <ul>
-              <li>
-                Développement d'une IHM web d'administration en Angular pour consulter la base de
-                données clients Orange, alimentée par les API SOAP internes.
-              </li>
-            </ul>
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">SEPT. 2023 – AOÛT 2024</span>
+            <span class="job-kind mono">Alternance</span>
           </div>
-        </div>
+          <h3 class="job-title">Développeur Web</h3>
+          <p class="job-org"><img class="org-img" src="/icons/org-orange.svg" alt="" />Orange France</p>
+          <ul>
+            <li>
+              Développement d'une IHM web d'administration en Angular pour consulter la base de
+              données clients Orange, alimentée par les API SOAP internes.
+            </li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Angular</span><span class="chip">API SOAP</span>
+          </div>
+        </article>
 
-        <div class="job">
-          <div class="job-date mono">DÉC. 2022<br />– FÉVR. 2023</div>
-          <div>
-            <p class="job-title">Développeur Web / Base de données — Stage</p>
-            <p class="job-org">DBXP</p>
-            <ul>
-              <li>
-                Site web en HTML/CSS et PHP conteneurisé avec Docker : authentification sur base
-                MariaDB, intégration de l'API Google Calendar.
-              </li>
-            </ul>
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">DÉC. 2022 – FÉVR. 2023</span>
+            <span class="job-kind mono">Stage</span>
           </div>
-        </div>
+          <h3 class="job-title">Développeur Web / Base de données</h3>
+          <p class="job-org"><span class="org-mono" aria-hidden="true">DB</span>DBXP</p>
+          <ul>
+            <li>
+              Site web en HTML/CSS et PHP conteneurisé avec Docker : authentification sur base
+              MariaDB, intégration de l'API Google Calendar.
+            </li>
+          </ul>
+          <div class="chips">
+            <span class="chip">PHP</span><span class="chip">Docker</span><span class="chip">MariaDB</span>
+          </div>
+        </article>
 
-        <div class="job">
-          <div class="job-date mono">JUIN – JUIL. 2022</div>
-          <div>
-            <p class="job-title">Développeur WordPress — Stage</p>
-            <p class="job-org">ReptilesMag</p>
-            <ul>
-              <li>
-                Développement d'un site e-commerce sous WordPress / Elementor, de l'intégration à
-                la mise en ligne.
-              </li>
-            </ul>
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">JUIN – JUIL. 2022</span>
+            <span class="job-kind mono">Stage</span>
           </div>
-        </div>
+          <h3 class="job-title">Développeur WordPress</h3>
+          <p class="job-org"><span class="org-mono" aria-hidden="true">RM</span>ReptilesMag</p>
+          <ul>
+            <li>
+              Développement d'un site e-commerce sous WordPress / Elementor, de l'intégration à
+              la mise en ligne.
+            </li>
+          </ul>
+          <div class="chips">
+            <span class="chip">WordPress</span><span class="chip">Elementor</span>
+          </div>
+        </article>
       </div>
+    </div>
+  </section>
+
+  <section id="homelab">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Infrastructure personnelle</h2>
+        <span class="count mono">Proxmox VE 9.2.2 · 6 LXC</span>
+      </div>
+      <div class="lab-intro">
+        <p class="lab-lead">
+          Un serveur Proxmox tourne en continu chez moi. J'y administre seul une infrastructure
+          que personne ne rattrape à ma place, et le site que vous lisez est servi depuis cette
+          machine.
+        </p>
+        <dl class="lab-specs mono">
+          <div><dt>réseau</dt><dd>plan d'adressage fixe, une IP par service</dd></div>
+          <div><dt>entrée</dt><dd>un seul reverse proxy, TLS renouvelé automatiquement</dd></div>
+          <div><dt>accès</dt><dd>clé SSH uniquement, tunnel WireGuard</dd></div>
+          <div><dt>livraison</dt><dd>deux applications déployées à chaque push</dd></div>
+        </dl>
+      </div>
+      <p class="snapshot-line">
+        <span class="snapshot-tag"><span class="dot"></span>RELEVÉ STATIQUE · 02/09/2026</span>
+        <span class="hint mono">Cliquez sur un nœud</span>
+      </p>
+
+      <div class="diagram-wrap">
+        <NetworkDiagram client:load />
+      </div>
+
     </div>
   </section>
 
@@ -131,52 +181,137 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         <span class="count mono">10+ dépôts</span>
       </div>
       <div class="cards">
-        <div class="card">
-          <h3>RoissyShare</h3>
-          <p class="role-note mono">Équipe de 4 · Front-End + Architecture Infra</p>
+        <article class="card">
+          <div class="card-shot">
+            <img
+              src="/shots/roissyshare.png"
+              alt="Page de connexion de RoissyShare"
+              width="1280"
+              height="800"
+              loading="lazy"
+              style="object-position: center"
+            />
+            <span class="shot-host mono"><span class="dot"></span>roissyshare.dylanbouillon.fr</span>
+          </div>
+          <div class="card-top">
+            <span class="cat mono">Plateforme B2B</span>
+            <span class="year mono">2026</span>
+          </div>
+          <!-- Pictogrammes Lucide (licence ISC), inlines pour qu'ils heritent
+               de currentColor et suivent donc le theme clair/sombre. -->
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z" />
+              <path d="m7 16.5-4.74-2.85" /><path d="m7 16.5 5-3" /><path d="M7 16.5v5.17" />
+              <path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z" />
+              <path d="m17 16.5-5-3" /><path d="m17 16.5 4.74-2.85" /><path d="M17 16.5v5.17" />
+              <path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z" />
+              <path d="M12 8 7.26 5.15" /><path d="m12 8 4.74-2.85" /><path d="M12 13.5V8" />
+            </svg>
+          </span>
+          <h3><a class="card-main" href="https://github.com/H3Dylan/RoissyShare" target="_blank" rel="noopener">RoissyShare</a></h3>
+          <p class="role-note mono">Équipe de 4 · Front-end + architecture infra</p>
           <p class="desc">
-            Plateforme B2B d'échange de fournitures pour les entreprises de la zone de Roissy :
+            Plateforme d'échange de fournitures pour les entreprises de la zone de Roissy :
             catalogue géolocalisé, recherche cartographique par rayon, mise en relation et suivi
             d'impact CO2/RSE.
           </p>
-          <div class="chips" style="margin-bottom:14px;">
-            <span class="chip">React</span><span class="chip">Node.js/Express</span><span class="chip">PostgreSQL/PostGIS</span><span class="chip">JWT</span><span class="chip">Docker</span><span class="chip">Proxmox VE</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
+          <div class="chips">
+            <span class="chip">React</span><span class="chip">Node.js</span><span class="chip">PostGIS</span><span class="chip">Docker</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
           </div>
-          <a class="repo" href="https://github.com/H3Dylan/RoissyShare" target="_blank" rel="noopener">github.com/H3Dylan/RoissyShare →</a>
-          <a class="repo" href="/infra" style="border-top:none;padding-top:0;">Hébergé sur mon homelab, déployé en continu →</a>
-        </div>
-        <div class="card">
-          <h3>Ce portfolio</h3>
+          <a class="card-live mono" href="https://roissyshare.dylanbouillon.fr" target="_blank" rel="noopener">voir le site en ligne ↗</a>
+          <span class="card-go" aria-hidden="true">↗</span>
+        </article>
+
+        <article class="card">
+          <div class="card-shot">
+            <img
+              src="/shots/portfolio.png"
+              alt="Page d'accueil de ce portfolio"
+              width="1280"
+              height="800"
+              loading="lazy"
+              style="object-position: top"
+            />
+            <span class="shot-host mono"><span class="dot"></span>dylanbouillon.fr</span>
+          </div>
+          <div class="card-top">
+            <span class="cat mono">Site personnel</span>
+            <span class="year mono">2026</span>
+          </div>
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19h8" /><path d="m4 17 6-6-6-6" />
+            </svg>
+          </span>
+          <h3><a class="card-main" href="https://github.com/H3Dylan/Portfolio" target="_blank" rel="noopener">Ce portfolio</a></h3>
           <p class="role-note mono">Solo · Astro + déploiement continu</p>
           <p class="desc">
-            Le site que vous lisez. Généré en statique avec Astro, servi par nginx depuis mon
-            serveur personnel. Chaque push sur <span class="mono">main</span> déclenche la vérification du
-            build puis un déploiement par release horodatée, avec bascule atomique et retour
-            arrière possible.
+            Le site que vous lisez, servi par nginx depuis mon serveur. Chaque push déclenche la
+            vérification du build puis un déploiement par release horodatée, avec bascule
+            atomique et retour arrière possible.
           </p>
-          <div class="chips" style="margin-bottom:14px;">
-            <span class="chip">Astro</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Nginx</span><span class="chip">GitHub Actions</span><span class="chip">Traefik</span>
+          <div class="chips">
+            <span class="chip">Astro</span><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Nginx</span><span class="chip">GitHub Actions</span>
           </div>
-          <a class="repo" href="https://github.com/H3Dylan/Portfolio" target="_blank" rel="noopener">github.com/H3Dylan/Portfolio →</a>
-        </div>
-        <div class="card">
-          <h3>Aetherfall</h3>
+          <a class="card-live mono" href="https://dylanbouillon.fr" target="_blank" rel="noopener">voir le site en ligne ↗</a>
+          <span class="card-go" aria-hidden="true">↗</span>
+        </article>
+
+        <article class="card">
+          <div class="card-shot is-empty" aria-hidden="true">
+            <span class="shot-host mono is-off"><span class="dot"></span>dépôt uniquement</span>
+          </div>
+          <div class="card-top">
+            <span class="cat mono">Jeu</span>
+            <span class="year mono">2026</span>
+          </div>
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" x2="10" y1="11" y2="11" /><line x1="8" x2="8" y1="9" y2="13" />
+              <line x1="15" x2="15.01" y1="12" y2="12" /><line x1="18" x2="18.01" y1="10" y2="10" />
+              <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z" />
+            </svg>
+          </span>
+          <h3><a class="card-main" href="https://github.com/H3Dylan/Aetherfall" target="_blank" rel="noopener">Aetherfall</a></h3>
           <p class="role-note mono">Solo · Python</p>
           <p class="desc">
-            Jeu de rôle console au tour par tour : système de classes, bestiaire, inventaire,
+            Jeu de rôle console au tour par tour : système de classes, bestiaire, inventaire et
             ligne de quête.
           </p>
-          <a class="repo" href="https://github.com/H3Dylan/Aetherfall" target="_blank" rel="noopener">github.com/H3Dylan/Aetherfall →</a>
-        </div>
-        <div class="card">
-          <h3>Pictur'Art</h3>
+          <div class="chips">
+            <span class="chip">Python</span>
+          </div>
+          <span class="card-go" aria-hidden="true">↗</span>
+        </article>
+
+        <article class="card">
+          <div class="card-shot is-empty" aria-hidden="true">
+            <span class="shot-host mono is-off"><span class="dot"></span>dépôt uniquement</span>
+          </div>
+          <div class="card-top">
+            <span class="cat mono">Réseau social</span>
+            <span class="year mono">2025</span>
+          </div>
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16" />
+              <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2" />
+              <circle cx="13" cy="7" r="1" fill="currentColor" />
+              <rect x="8" y="2" width="14" height="14" rx="2" />
+            </svg>
+          </span>
+          <h3><a class="card-main" href="https://github.com/BrasSelva/Pictur-Art" target="_blank" rel="noopener">Pictur'Art</a></h3>
           <p class="role-note mono">Équipe · MERN</p>
           <p class="desc">
             Réseau social de photos organisé par groupes privés : publication, réactions,
-            commentaires, PWA installable.
+            commentaires, et application installable (PWA).
           </p>
-          <a class="repo" href="https://github.com/BrasSelva/Pictur-Art" target="_blank" rel="noopener">github.com/BrasSelva/Pictur-Art →</a>
-        </div>
+          <div class="chips">
+            <span class="chip">React</span><span class="chip">Node.js</span><span class="chip">MongoDB</span><span class="chip">PWA</span>
+          </div>
+          <span class="card-go" aria-hidden="true">↗</span>
+        </article>
       </div>
 
       <div class="other-repos">
@@ -197,88 +332,116 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <section id="competences">
     <div class="wrap">
       <div class="section-head"><h2>Compétences</h2></div>
-      <div class="skill-groups">
-        <div class="skill-group">
-          <span class="g-label">Front-end</span>
-          <div class="chips">
-            <span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">Angular</span><span class="chip">React</span><span class="chip">HTML5</span><span class="chip">CSS3</span>
+      <div class="skill-cards">
+        <div class="skill-card">
+          <h3>Front-end</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/javascript.svg" alt="" /><em>JavaScript</em></span>
+            <span class="tile"><img src="/icons/typescript.svg" alt="" /><em>TypeScript</em></span>
+            <span class="tile"><img src="/icons/angular.svg" alt="" /><em>Angular</em></span>
+            <span class="tile"><img src="/icons/react.svg" alt="" /><em>React</em></span>
+            <span class="tile"><img src="/icons/html5.svg" alt="" /><em>HTML5</em></span>
+            <span class="tile"><img src="/icons/css3.svg" alt="" /><em>CSS3</em></span>
           </div>
         </div>
-        <div class="skill-group">
-          <span class="g-label">Back-end</span>
-          <div class="chips">
-            <span class="chip">PHP</span><span class="chip">Python</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">Java</span><span class="chip">API REST</span><span class="chip">API SOAP</span>
+        <div class="skill-card">
+          <h3>Back-end</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/php.svg" alt="" /><em>PHP</em></span>
+            <span class="tile"><img src="/icons/python.svg" alt="" /><em>Python</em></span>
+            <span class="tile"><img src="/icons/c.svg" alt="" /><em>C</em></span>
+            <span class="tile"><img src="/icons/cplusplus.svg" alt="" /><em>C++</em></span>
+            <span class="tile"><img src="/icons/java.svg" alt="" /><em>Java</em></span>
+            <span class="tile no-logo"><em>API REST</em></span>
+            <span class="tile no-logo"><em>API SOAP</em></span>
           </div>
         </div>
-        <div class="skill-group">
-          <span class="g-label">Bases de données</span>
-          <div class="chips">
-            <span class="chip">SQL</span><span class="chip">MySQL</span><span class="chip">MariaDB</span><span class="chip">MongoDB</span>
+        <div class="skill-card">
+          <h3>Bases de données</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/postgresql.svg" alt="" /><em>PostgreSQL</em></span>
+            <span class="tile"><img src="/icons/mysql.svg" alt="" /><em>MySQL</em></span>
+            <span class="tile"><img src="/icons/mariadb.svg" alt="" /><em>MariaDB</em></span>
+            <span class="tile"><img src="/icons/mongodb.svg" alt="" /><em>MongoDB</em></span>
+            <span class="tile no-logo"><em>SQL</em></span>
           </div>
         </div>
-        <div class="skill-group">
-          <span class="g-label">DevOps &amp; outils</span>
-          <div class="chips">
-            <span class="chip">Git</span><span class="chip">GitLab CI/CD</span><span class="chip">GitHub Actions</span><span class="chip">Docker</span><span class="chip">Ansible</span><span class="chip">Linux/UNIX</span><span class="chip">Proxmox VE</span><span class="chip">Traefik</span><span class="chip">Nginx</span><span class="chip">WireGuard</span><span class="chip">BIND (DNS)</span>
+        <div class="skill-card">
+          <h3>Conteneurs &amp; CI/CD</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/docker.svg" alt="" /><em>Docker</em></span>
+            <span class="tile"><img src="/icons/git.svg" alt="" /><em>Git</em></span>
+            <span class="tile"><img src="/icons/gitlab.svg" alt="" /><em>GitLab CI</em></span>
+            <span class="tile"><img src="/icons/githubactions.svg" alt="" /><em>GH Actions</em></span>
+            <span class="tile"><img src="/icons/ansible.svg" alt="" /><em>Ansible</em></span>
           </div>
         </div>
-        <div class="skill-group">
-          <span class="g-label">CMS</span>
-          <div class="chips">
-            <span class="chip">WordPress</span><span class="chip">Elementor</span>
+        <div class="skill-card">
+          <h3>Systèmes &amp; réseau</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/linux.svg" alt="" /><em>Linux</em></span>
+            <span class="tile"><img src="/icons/proxmox.svg" alt="" /><em>Proxmox</em></span>
+            <span class="tile"><img src="/icons/traefik.svg" alt="" /><em>Traefik</em></span>
+            <span class="tile"><img src="/icons/nginx.svg" alt="" /><em>Nginx</em></span>
+            <span class="tile mono-logo" style="--logo: url('/icons/wireguard.svg')"><i></i><em>WireGuard</em></span>
+            <span class="tile no-logo"><em>BIND (DNS)</em></span>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="homelab">
-    <div class="wrap">
-      <div class="section-head">
-        <h2>À côté du cursus</h2>
-        <span class="count mono">homelab perso</span>
-      </div>
-      <p class="hero-bio" style="margin:0 0 24px;">
-        Les compétences DevOps ci-dessus — et celles déployées sur RoissyShare (Proxmox,
-        WireGuard, Traefik) — je les pratique aussi sur mon temps libre : un serveur Proxmox
-        personnel tourne en continu à la maison. Six conteneurs LXC, un plan d'adressage fixe,
-        un unique reverse proxy en frontal avec certificats renouvelés automatiquement, et deux
-        applications déployées par intégration continue — dont ce site, que vous lisez depuis
-        cette machine.
-      </p>
-      <div class="card" style="max-width:420px;">
-        <h3>Infrastructure personnelle</h3>
-        <p class="role-note mono">Proxmox VE · 6 LXC · homelab</p>
-        <p class="desc">
-          VPN WireGuard, reverse proxy Traefik avec filtrage CrowdSec, supervision
-          Prometheus/Grafana, services conteneurisés et pipelines de déploiement — administrés
-          en autonomie.
-        </p>
-        <a class="repo" href="/infra">Voir la carte réseau interactive →</a>
+        <div class="skill-card">
+          <h3>CMS</h3>
+          <div class="tiles">
+            <span class="tile"><img src="/icons/wordpress.svg" alt="" /><em>WordPress</em></span>
+            <span class="tile mono-logo" style="--logo: url('/icons/elementor.svg')"
+              ><i></i><em>Elementor</em></span
+            >
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="formation">
     <div class="wrap">
-      <div class="section-head"><h2>Formation</h2></div>
-      <div class="edu-list">
-        <div class="edu-item">
-          <div><p class="name">Master Développement Fullstack (M1–M2)</p><p class="org">H3 Hitema, Paris Montparnasse</p></div>
-          <p class="date">2024 – 2026</p>
-        </div>
-        <div class="edu-item">
-          <div><p class="name">Bachelor Responsable de Projets Informatiques</p><p class="org">H3 Hitema, Issy-les-Moulineaux</p></div>
-          <p class="date">2021 – 2024</p>
-        </div>
-        <div class="edu-item">
-          <div><p class="name">Prépa intégrée, 1<sup>re</sup> année d'école d'ingénieur</p><p class="org">Polytech Paris-Saclay</p></div>
-          <p class="date">2020 – 2021</p>
-        </div>
-        <div class="edu-item">
-          <div><p class="name">Baccalauréat scientifique, spé. Sciences de l'ingénieur — mention Très bien</p><p class="org">Lycée Viollet-le-Duc</p></div>
-          <p class="date">2020</p>
-        </div>
+      <div class="section-head">
+        <h2>Formations</h2>
+        <span class="count mono">2020 – 2026</span>
+      </div>
+      <div class="timeline">
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">2024 – 2026</span>
+            <span class="job-kind mono">Master</span>
+          </div>
+          <h3 class="job-title">Développement Fullstack (M1–M2)</h3>
+          <p class="job-org"><img class="org-img" src="/icons/org-h3hitema.jpg" alt="" />H3 Hitema · Paris Montparnasse</p>
+        </article>
+
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">2021 – 2024</span>
+            <span class="job-kind mono">Bachelor</span>
+          </div>
+          <h3 class="job-title">Responsable de Projets Informatiques</h3>
+          <p class="job-org"><img class="org-img" src="/icons/org-h3hitema.jpg" alt="" />H3 Hitema · Issy-les-Moulineaux</p>
+        </article>
+
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">2020 – 2021</span>
+            <span class="job-kind mono">Prépa</span>
+          </div>
+          <h3 class="job-title">1<sup>re</sup> année d'école d'ingénieur</h3>
+          <p class="job-org"><span class="org-mono" aria-hidden="true">PS</span>Polytech Paris-Saclay</p>
+        </article>
+
+        <article class="job">
+          <div class="job-top">
+            <span class="job-date mono">2020</span>
+            <span class="job-kind mono">Baccalauréat</span>
+          </div>
+          <h3 class="job-title">Scientifique, spé. Sciences de l'ingénieur</h3>
+          <p class="job-org"><span class="org-mono" aria-hidden="true">VD</span>Lycée Viollet-le-Duc · mention Très bien</p>
+        </article>
       </div>
     </div>
   </section>

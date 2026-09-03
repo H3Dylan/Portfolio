@@ -1,4 +1,30 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/** Fait monter un nombre de 0 vers sa valeur, en respectant la meme
+ *  precision decimale que la cible pour eviter un "0.0" la ou on veut "0". */
+function useCountUp(value: number, duration = 750) {
+  const [shown, setShown] = useState(value);
+  const frame = useRef(0);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setShown(value);
+      return;
+    }
+    const decimals = Number.isInteger(value) ? 0 : 1;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setShown(Number((value * eased).toFixed(decimals)));
+      if (p < 1) frame.current = requestAnimationFrame(tick);
+    };
+    frame.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame.current);
+  }, [value, duration]);
+
+  return shown;
+}
 
 type NodeId = "host" | "101" | "102" | "103" | "104" | "105" | "106";
 
@@ -20,7 +46,7 @@ const data: Record<NodeId, NodeData> = {
     label: "serveur",
     type: "Hôte Proxmox VE 9.2.2",
     ip: "192.168.1.100",
-    desc: "Le nœud physique qui héberge les six conteneurs ci-dessous. Chaque machine porte une adresse fixe dont le dernier octet reprend son identifiant Proxmox — une IP suffit à savoir de quel service il s'agit.",
+    desc: "Le nœud physique qui héberge les six conteneurs ci-dessous. Chaque machine porte une adresse fixe dont le dernier octet reprend son identifiant Proxmox : une IP suffit à savoir de quel service il s'agit.",
     tags: [],
     cpu: 0,
     cpuOf: 6,
@@ -115,6 +141,9 @@ const positions: { id: NodeId; left: number; host?: boolean }[] = [
 export default function NetworkDiagram() {
   const [selected, setSelected] = useState<NodeId>("host");
   const d = data[selected];
+  const cpu = useCountUp(d.cpu);
+  const mem = useCountUp(d.mem);
+  const disk = useCountUp(d.disk);
 
   return (
     <>
@@ -166,7 +195,7 @@ export default function NetworkDiagram() {
           <div className="metric">
             <span className="m-label mono">CPU</span>
             <div className="m-value mono">
-              {d.cpu}% <span className="of">/ {d.cpuOf} vCPU</span>
+              {cpu}% <span className="of">/ {d.cpuOf} vCPU</span>
             </div>
             <div className="bar">
               <span style={{ ["--w" as any]: `${Math.min(d.cpu * 4, 100)}%` }}></span>
@@ -174,14 +203,14 @@ export default function NetworkDiagram() {
           </div>
           <div className="metric">
             <span className="m-label mono">MÉMOIRE</span>
-            <div className="m-value mono">{d.mem}%</div>
+            <div className="m-value mono">{mem}%</div>
             <div className="bar">
               <span style={{ ["--w" as any]: `${d.mem}%` }}></span>
             </div>
           </div>
           <div className="metric">
             <span className="m-label mono">DISQUE</span>
-            <div className="m-value mono">{d.disk}%</div>
+            <div className="m-value mono">{disk}%</div>
             <div className="bar">
               <span style={{ ["--w" as any]: `${d.disk}%` }}></span>
             </div>
