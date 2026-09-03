@@ -20,8 +20,9 @@ Proxmox / invite), aucune ne depend du DHCP de la Livebox.
 | `.106` | LXC 106 roissyshare | LXC | `pct set` |
 
 Aucune exception : la convention est reguliere. La VM 100 (web-server), qui
-portait roissyshare en `.110`, a ete migree vers le LXC 106 le 2026-09-02 et
-est arretee.
+portait roissyshare en `.110`, a ete migree vers le LXC 106 le 2026-09-02 puis
+detruite le 2026-09-03. Ses sauvegardes quotidiennes restent dans
+`/var/lib/vz/dump` si un retour arriere devenait necessaire.
 
 Le `.100` de l'hyperviseur interdit d'utiliser le VMID 100 pour une machine :
 en creer une prendrait le prochain ID libre.
