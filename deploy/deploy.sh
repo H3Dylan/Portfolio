@@ -45,6 +45,10 @@ mv -T "${WWW_DIR}/current.tmp" "${WWW_DIR}/current"
 chown -R www-data:www-data "$RELEASE"
 
 log "Rechargement de nginx"
+# Le vhost est versionne ici : sans cette copie, une modification du fichier
+# ne partait qu au prochain setup-lxc.sh, donc jamais. nginx -t garde le
+# filet : en cas d erreur le deploiement s arrete avant le rechargement.
+install -m 644 "$REPO_DIR/deploy/nginx.conf" /etc/nginx/sites-available/portfolio
 nginx -t
 systemctl reload nginx
 
