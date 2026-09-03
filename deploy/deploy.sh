@@ -11,7 +11,20 @@ KEEP_RELEASES=5
 log() { printf '\033[1;34m==>\033[0m %s\n' "$1"; }
 
 log "Recuperation de origin/${BRANCH}"
-git -C "$REPO_DIR" fetch --prune origin
+# Le conteneur depend d un resolveur DNS externe : une perte de paquets
+# ponctuelle suffisait a faire echouer tout le deploiement sur un
+# "Could not resolve host: github.com". Trois tentatives espacees.
+for essai in 1 2 3; do
+  if git -C "$REPO_DIR" fetch --prune origin; then
+    break
+  fi
+  if [ "$essai" = 3 ]; then
+    echo "Echec de la recuperation apres 3 tentatives" >&2
+    exit 1
+  fi
+  log "Nouvelle tentative dans $((essai * 5))s"
+  sleep $((essai * 5))
+done
 git -C "$REPO_DIR" reset --hard "origin/${BRANCH}"
 REVISION="$(git -C "$REPO_DIR" rev-parse --short HEAD)"
 
