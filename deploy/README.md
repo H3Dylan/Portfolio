@@ -111,6 +111,27 @@ systemd-run --on-calendar='daily' --unit=portfolio-deploy /opt/portfolio/deploy/
 | `deploy.sh`                  | `/opt/portfolio/deploy/deploy.sh`          |
 | `nginx.conf`                 | `/etc/nginx/sites-available/portfolio`     |
 | `traefik/portfolio.yml`      | `/opt/traefik/config/portfolio.yml` (LXC 102) |
+| `capture-apercus.mjs`        | outil local, ne part pas sur le serveur    |
+
+## Apercus des cartes projet
+
+Les cartes des projets reellement heberges affichent une capture du site, dans
+`public/shots/`. Ce sont des images figees : elles ne se mettent pas a jour
+toutes seules quand un site change. Pour les regenerer, depuis un poste Windows
+avec Edge ou Chrome :
+
+```bash
+node deploy/capture-apercus.mjs
+```
+
+Le script pilote un navigateur sans interface via CDP, ce qui laisse aux pages
+React le temps de s'afficher, la ou un simple `--screenshot` capture une page
+blanche. Le portfolio est pris depuis le site en ligne : pour figer une refonte
+pas encore deployee, lancer `npm run dev` et pointer l'url du script sur
+`http://localhost:4321`.
+
+RoissyShare demande une authentification, la capture montre donc son ecran de
+connexion, ce que voit un visiteur.
 
 ## CI/CD
 
