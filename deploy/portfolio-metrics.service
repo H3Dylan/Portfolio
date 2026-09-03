@@ -1,0 +1,12 @@
+[Unit]
+Description=Releve des metriques du homelab pour le portfolio
+# pvesh a besoin que la couche cluster soit prete.
+After=pve-cluster.service
+Requires=pve-cluster.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/portfolio-metrics.py
+# Un releve qui echoue ne doit pas remplir le journal d'alertes : le site
+# retombe de lui-meme sur ses valeurs de secours.
+SuccessExitStatus=0

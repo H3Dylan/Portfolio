@@ -128,6 +128,56 @@ const data: Record<NodeId, NodeData> = {
   },
 };
 
+interface Mesures {
+  cpu: number;
+  cpus: number;
+  mem: number;
+  disk: number;
+  uptime: string;
+  statut?: string;
+}
+
+interface Releve {
+  releve: string;
+  noeud: Mesures;
+  conteneurs: Record<string, Mesures>;
+}
+
+/** Lit le releve depose par le noeud Proxmox. Meme origine, donc pas de CORS
+ *  ni d'API publique : un timer sur l'hyperviseur ecrit ce fichier toutes les
+ *  minutes. Tant qu'il n'a pas repondu, les valeurs de secours du tableau
+ *  ci-dessus restent affichees. */
+function useReleve() {
+  const [releve, setReleve] = useState<Releve | null>(null);
+
+  useEffect(() => {
+    let monte = true;
+    const charge = async () => {
+      try {
+        const r = await fetch("/metrics.json", { cache: "no-store" });
+        if (!r.ok) throw new Error(String(r.status));
+        const json = (await r.json()) as Releve;
+        if (monte) setReleve(json);
+      } catch {
+        // Un releve manquant n'est pas une erreur a afficher : le composant
+        // signale simplement qu'il montre ses valeurs de secours.
+      }
+    };
+    charge();
+    const t = setInterval(charge, 30000);
+    return () => {
+      monte = false;
+      clearInterval(t);
+    };
+  }, []);
+
+  return releve;
+}
+
+function heure(iso: string) {
+  return new Date(iso).toLocaleTimeString("fr-FR");
+}
+
 const positions: { id: NodeId; left: number; host?: boolean }[] = [
   { id: "host", left: 50, host: true },
   { id: "101", left: 8 },
@@ -140,13 +190,50 @@ const positions: { id: NodeId; left: number; host?: boolean }[] = [
 
 export default function NetworkDiagram() {
   const [selected, setSelected] = useState<NodeId>("host");
+  const releve = useReleve();
   const d = data[selected];
-  const cpu = useCountUp(d.cpu);
-  const mem = useCountUp(d.mem);
-  const disk = useCountUp(d.disk);
+
+  const vu = releve
+    ? selected === "host"
+      ? releve.noeud
+      : releve.conteneurs[selected]
+    : undefined;
+
+  const mesures = {
+    cpu: vu?.cpu ?? d.cpu,
+    cpuOf: vu?.cpus ?? d.cpuOf,
+    mem: vu?.mem ?? d.mem,
+    disk: vu?.disk ?? d.disk,
+    uptime: vu?.uptime ?? d.uptime,
+  };
+
+  const cpu = useCountUp(mesures.cpu);
+  const mem = useCountUp(mesures.mem);
+  const disk = useCountUp(mesures.disk);
+
+  // Un releve fige serait pire qu'une absence de releve : au-dela de cinq
+  // minutes on cesse d'annoncer du direct.
+  const age = releve ? Date.now() - Date.parse(releve.releve) : Infinity;
+  const direct = age < 5 * 60 * 1000;
+  const etiquette = !releve
+    ? "RELEVÉ DE SECOURS"
+    : direct
+      ? `EN DIRECT · ${heure(releve.releve)}`
+      : `DERNIER RELEVÉ · ${heure(releve.releve)}`;
+
+  const statut = (id: NodeId) =>
+    id === "host" ? "running" : (releve?.conteneurs[id]?.statut ?? "running");
 
   return (
     <>
+      <p className="snapshot-line">
+        <span className={`snapshot-tag${direct ? " direct" : ""}`}>
+          <span className="dot"></span>
+          {etiquette}
+        </span>
+        <span className="hint mono">Cliquez sur un nœud</span>
+      </p>
+
       <div className="diagram">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none">
           {positions
@@ -165,7 +252,7 @@ export default function NetworkDiagram() {
         {positions.map((p) => (
           <button
             key={p.id}
-            className={`node${p.host ? " host" : ""}`}
+            className={`node${p.host ? " host" : ""}${statut(p.id) === "running" ? "" : " eteint"}`}
             style={{ left: `${p.left}%`, top: p.host ? "18%" : "78%" }}
             aria-pressed={selected === p.id}
             onClick={() => setSelected(p.id)}
@@ -195,29 +282,29 @@ export default function NetworkDiagram() {
           <div className="metric">
             <span className="m-label mono">CPU</span>
             <div className="m-value mono">
-              {cpu}% <span className="of">/ {d.cpuOf} vCPU</span>
+              {cpu}% <span className="of">/ {mesures.cpuOf} vCPU</span>
             </div>
             <div className="bar">
-              <span style={{ ["--w" as any]: `${Math.min(d.cpu * 4, 100)}%` }}></span>
+              <span style={{ ["--w" as any]: `${Math.min(mesures.cpu * 4, 100)}%` }}></span>
             </div>
           </div>
           <div className="metric">
             <span className="m-label mono">MÉMOIRE</span>
             <div className="m-value mono">{mem}%</div>
             <div className="bar">
-              <span style={{ ["--w" as any]: `${d.mem}%` }}></span>
+              <span style={{ ["--w" as any]: `${mesures.mem}%` }}></span>
             </div>
           </div>
           <div className="metric">
             <span className="m-label mono">DISQUE</span>
             <div className="m-value mono">{disk}%</div>
             <div className="bar">
-              <span style={{ ["--w" as any]: `${d.disk}%` }}></span>
+              <span style={{ ["--w" as any]: `${mesures.disk}%` }}></span>
             </div>
           </div>
           <div className="metric">
             <span className="m-label mono">UPTIME</span>
-            <div className="m-value mono">{d.uptime}</div>
+            <div className="m-value mono">{mesures.uptime}</div>
           </div>
         </div>
       </div>

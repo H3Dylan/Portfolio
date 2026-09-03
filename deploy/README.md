@@ -112,6 +112,9 @@ systemd-run --on-calendar='daily' --unit=portfolio-deploy /opt/portfolio/deploy/
 | `nginx.conf`                 | `/etc/nginx/sites-available/portfolio`     |
 | `traefik/portfolio.yml`      | `/opt/traefik/config/portfolio.yml` (LXC 102) |
 | `capture-apercus.mjs`        | outil local, ne part pas sur le serveur    |
+| `metrics-collect.py`         | `/usr/local/bin/portfolio-metrics.py` (noeud) |
+| `portfolio-metrics.service`  | `/etc/systemd/system/` (noeud)             |
+| `portfolio-metrics.timer`    | `/etc/systemd/system/` (noeud)             |
 
 ## Apercus des cartes projet
 
@@ -132,6 +135,43 @@ pas encore deployee, lancer `npm run dev` et pointer l'url du script sur
 
 RoissyShare demande une authentification, la capture montre donc son ecran de
 connexion, ce que voit un visiteur.
+
+## Metriques du homelab
+
+Le schema reseau du site affiche les mesures reelles des conteneurs. Elles ne
+viennent pas d'une API publique : un timer sur le noeud Proxmox interroge
+`pvesh`, ecrit un JSON et le depose dans le LXC 105 avec `pct push`. Le site le
+lit en meme origine, sur `/metrics.json`.
+
+Ce choix evite trois choses : un jeton d'API Proxmox stocke sur le serveur web,
+une exposition de Prometheus sur internet, et toute configuration CORS.
+
+Le fichier est ecrit dans `/var/www/portfolio/`, en dehors du dossier de
+release : `deploy.sh` bascule un symlink a chaque livraison et l'emporterait.
+Le vhost le sert par une `location` exacte, en `no-store`.
+
+Installation, une seule fois, en root sur le noeud :
+
+```bash
+install -m 755 /root/metrics-collect.py /usr/local/bin/portfolio-metrics.py
+install -m 644 /root/portfolio-metrics.service /etc/systemd/system/
+install -m 644 /root/portfolio-metrics.timer /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now portfolio-metrics.timer
+```
+
+Verification :
+
+```bash
+systemctl list-timers portfolio-metrics.timer
+/usr/local/bin/portfolio-metrics.py
+curl -s http://192.168.1.105/metrics.json
+```
+
+Si le releve manque ou date de plus de cinq minutes, le site n'affiche pas
+d'erreur : il retombe sur les valeurs inscrites dans le composant et l'etiquette
+passe de « EN DIRECT » a « RELEVE DE SECOURS ». Une panne de la supervision ne
+casse donc jamais la page.
 
 ## CI/CD
 

@@ -1,0 +1,12 @@
+[Unit]
+Description=Releve periodique des metriques du homelab
+
+[Timer]
+# Deux minutes apres le demarrage, le temps que les conteneurs soient montes.
+OnBootSec=2min
+OnUnitActiveSec=1min
+AccuracySec=10s
+Persistent=false
+
+[Install]
+WantedBy=timers.target

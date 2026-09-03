@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# releve du homelab : produit par le noeud Proxmox, jamais versionne
+public/metrics.json

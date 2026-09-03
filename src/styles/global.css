@@ -1393,3 +1393,29 @@ html, body { overflow-x: clip; }
     gap: 18px;
   }
 }
+
+/* ---- Etat du releve du homelab ----
+   La pastille passe au vert tant que le releve date de moins de cinq minutes,
+   et reprend l'aspect en pointilles des que le site retombe sur ses valeurs
+   de secours. */
+.snapshot-tag.direct {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+  color: var(--ink);
+}
+.snapshot-tag.direct .dot {
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  animation: led 2.6s ease-in-out infinite;
+}
+
+/* Conteneur arrete : la diode ne clignote plus. */
+.node.eteint .led {
+  background: var(--ink-soft);
+  box-shadow: none;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snapshot-tag.direct .dot { animation: none; }
+}
