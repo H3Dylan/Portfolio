@@ -69,8 +69,9 @@ import NetworkDiagram from "../components/NetworkDiagram";
           <p class="job-org"><img class="org-img" src="/icons/org-orange.svg" alt="" />Orange, équipe PIVA · intégration et validation, périmètre DNS · Guyancourt</p>
           <ul>
             <li>
-              Reprise et correction d'un script legacy en C au cœur de l'infrastructure DNS
-              (BIND) d'Orange, remis en service pour l'équipe.
+              Rétro-ingénierie d'un script legacy en C au cœur de l'infrastructure DNS
+              (BIND) d'Orange : code non documenté, diagnostic et remise en état partielle
+              des fonctionnalités.
             </li>
             <li>
               Conception d'un linter Ansible déclenché sur chaque pipeline GitLab CI, déployé
@@ -160,7 +161,7 @@ import NetworkDiagram from "../components/NetworkDiagram";
           <div><dt>réseau</dt><dd>plan d'adressage fixe, une IP par service</dd></div>
           <div><dt>entrée</dt><dd>un seul reverse proxy, TLS renouvelé automatiquement</dd></div>
           <div><dt>accès</dt><dd>clé SSH uniquement, tunnel WireGuard</dd></div>
-          <div><dt>livraison</dt><dd>deux applications déployées à chaque push</dd></div>
+          <div><dt>livraison</dt><dd>deux applications déployées à chaque push, tests verts obligatoires</dd></div>
         </dl>
       </div>
       <div class="diagram-wrap">
@@ -209,11 +210,11 @@ import NetworkDiagram from "../components/NetworkDiagram";
           <p class="role-note mono">Équipe de 4 · Front-end + architecture infra</p>
           <p class="desc">
             Plateforme d'échange de fournitures pour les entreprises de la zone de Roissy :
-            catalogue géolocalisé, recherche cartographique par rayon, mise en relation et suivi
-            d'impact CO2/RSE.
+            catalogue géolocalisé, recherche cartographique par rayon, messagerie temps réel et
+            suivi d'impact CO2/RSE. Le déploiement n'a lieu que si la suite de tests Jest passe.
           </p>
           <div class="chips">
-            <span class="chip">React</span><span class="chip">Node.js</span><span class="chip">PostGIS</span><span class="chip">Docker</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
+            <span class="chip">React</span><span class="chip">Node.js</span><span class="chip">Express</span><span class="chip">Prisma</span><span class="chip">PostGIS</span><span class="chip">Socket.IO</span><span class="chip">Docker</span><span class="chip">Traefik</span><span class="chip">GitHub Actions</span>
           </div>
           <a class="card-live mono" href="https://roissyshare.dylanbouillon.fr" target="_blank" rel="noopener">voir le site en ligne ↗</a>
           <span class="card-go" aria-hidden="true">↗</span>
@@ -343,8 +344,10 @@ import NetworkDiagram from "../components/NetworkDiagram";
         <div class="skill-card">
           <h3>Back-end</h3>
           <div class="tiles">
-            <span class="tile"><img src="/icons/php.svg" alt="" /><em>PHP</em></span>
+            <span class="tile"><img src="/icons/nodejs.svg" alt="" /><em>Node.js</em></span>
+            <span class="tile no-logo"><em>Express</em></span>
             <span class="tile"><img src="/icons/python.svg" alt="" /><em>Python</em></span>
+            <span class="tile"><img src="/icons/php.svg" alt="" /><em>PHP</em></span>
             <span class="tile"><img src="/icons/c.svg" alt="" /><em>C</em></span>
             <span class="tile"><img src="/icons/cplusplus.svg" alt="" /><em>C++</em></span>
             <span class="tile"><img src="/icons/java.svg" alt="" /><em>Java</em></span>
@@ -359,6 +362,8 @@ import NetworkDiagram from "../components/NetworkDiagram";
             <span class="tile"><img src="/icons/mysql.svg" alt="" /><em>MySQL</em></span>
             <span class="tile"><img src="/icons/mariadb.svg" alt="" /><em>MariaDB</em></span>
             <span class="tile"><img src="/icons/mongodb.svg" alt="" /><em>MongoDB</em></span>
+            <span class="tile no-logo"><em>PostGIS</em></span>
+            <span class="tile no-logo"><em>Prisma</em></span>
             <span class="tile no-logo"><em>SQL</em></span>
           </div>
         </div>
@@ -370,6 +375,8 @@ import NetworkDiagram from "../components/NetworkDiagram";
             <span class="tile"><img src="/icons/gitlab.svg" alt="" /><em>GitLab CI</em></span>
             <span class="tile"><img src="/icons/githubactions.svg" alt="" /><em>GH Actions</em></span>
             <span class="tile"><img src="/icons/ansible.svg" alt="" /><em>Ansible</em></span>
+            <span class="tile no-logo"><em>Terraform</em></span>
+            <span class="tile no-logo"><em>Jest</em></span>
           </div>
         </div>
         <div class="skill-card">
